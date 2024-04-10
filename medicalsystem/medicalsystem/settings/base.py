@@ -23,9 +23,6 @@ BASE_DIR = Path(__file__).ancestor(3)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-377=xvwje#p-!9a2*7^j9-+aw-2yb2gb59^96r9(pk!_vrv=@u'
 
-
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +38,34 @@ INSTALLED_APPS = [
     'apps.turno',
     'apps.socio',
 ]
+
+JAZZMIN_SETTINGS = {
+    "topmenu_links": [
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Página de inicio", "url": "/", "new_window": False},
+    ],
+    "site_title": "MedicalSys",
+    "site_header": "Library",
+    "site_brand": "MedicalSys",
+    "site_logo": "/img/base/Icono.png",
+    "site_icon": "/img/base/Icono.png",
+    "site_logo_classes": "img",
+    "welcome_sign": "Ingresar las credenciales de administrador",
+    "changeform_format": "carousel",
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "socio.paciente": "fas fa-users",
+        "socio.domicilio": "fas fa-home",
+        "socio.parroquia": "fas fa-church",
+        "socio.referente": "fas fa-cross",
+        "socio.telefono": "fas fa-phone",
+        "socio.certificado": "fas fa-print",
+        "socio.tipocertificado": "fas fa-stamp",
+    },
+    }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -95,10 +120,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "es-ar"
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
+
