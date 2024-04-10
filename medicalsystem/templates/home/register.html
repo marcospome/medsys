@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Registro</title>
+    <link type="text/css" href="{% static 'css/home/register.css' %}" rel="stylesheet" />
+    <link rel="icon" href="{% static 'img/base/Icono.png' %}">
+</head>
+<body>
+    <div class="formulario">
+        <br>
+        <img src="{% static 'img/base/logo.png' %}" alt="logo"/>
+        <h1>Registro</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="username">
+                <label for="{{ form.username.id_for_label }}">Usuario</label>
+                {{ form.username }}
+            </div>
+            <div class="contrasena">
+                <label for="{{ form.password1.id_for_label }}">Contraseña</label>
+                {{ form.password1 }}
+            </div>
+            <div class="confirm-contrasena">
+                <label for="{{ form.password2.id_for_label }}">Confirmar Contraseña</label>
+                {{ form.password2 }}
+            </div>
+            <div class="boton">
+                <input type="submit" value="Registrarse">
+            </div>
+        </form>
+        <br>
+        <p>¿Ya tienes una cuenta? <a href="{% url 'custom_login' %}">Iniciar sesión</a></p>
+    </div>
+</body>
+</html>

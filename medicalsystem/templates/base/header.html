@@ -1,0 +1,28 @@
+{% load static %}
+<header>
+    <script src="https://kit.fontawesome.com/41bcea2ae3.js" crossorigin="anonymous"></script>
+    <link type="text/css" href="{% static 'css/home/index.css' %}" rel="stylesheet" />
+    <div class="container__menu">
+        <div class="logo">
+            <img src="{% static 'img/base/logo.png' %}" alt="">
+        </div>
+        <div class="menu">
+            <i class="fas fa-bars" id="btn_menu"></i>
+            <div id="back_menu"></div>
+            <nav id="nav">
+                <img src="{% static 'img/base/logomutual.png' %}" alt="">
+                <ul>
+                    <li><a href="./">Inicio</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="./admin">Panel de administración</a></li>
+                    {% else %}
+                    <li><a href="./login">Iniciar sesión</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <script src="{% static 'js/home/script.js' %}"></script>
+
+
+</header>

@@ -1,0 +1,45 @@
+body {
+    background: repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 10px, #cccccc 10px, #cccccc 20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 5px solid rgba(110, 110, 110, 0.062); /* Agregar borde blanco */
+
+}
+
+.circle {
+    width: 100px;
+    height: 100px;
+    background-color: rgb(28, 180, 28); /* Hacer el fondo transparente */
+    border: 5px solid rgb(236, 233, 233); /* Agregar borde blanco */
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    align-items: center;
+}
+
+.check {
+    color: #ffffff;
+    font-size: 70px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Añadir una sombra al texto */
+}
+
+.message {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333333;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+    font-family: Arial, Helvetica, sans-serif;
+}
