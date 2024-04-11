@@ -48,7 +48,7 @@ class PacienteAdmin(CustomImportExportModelAdmin):
 
     telefono_display.short_description = "Teléfono"
 
-    search_fields = ('dni','apellidos',)
+    search_fields = ('dni',)
     
     list_filter = ['categoria', 'monotributo', 'credencial_entregada']
 
@@ -59,20 +59,8 @@ class DomicilioAdmin(admin.ModelAdmin):
 class ReferenteAdmin(admin.ModelAdmin):
     list_display = ('alias', 'nombres', 'apellidos', 'parroquia',)
 
-class ParroquiaAdmin(admin.ModelAdmin):
-    list_display = ('nombre',)
-
 class TelefonoAdmin(admin.ModelAdmin):
     list_display = ('numero_de_telefono',)
-
-class TratamientoMedicoAdmin(admin.ModelAdmin):
-    list_display = ('descripcion',)
-
-class PacienteTratamientoMedicoAdmin(admin.ModelAdmin):
-    list_display = ('paciente', 'tratamiento_medico', 'fecha_desde', 'fecha_hasta')
-
-class MedicacionAdmin(admin.ModelAdmin):
-    list_display = ('medicamento', 'dosis', 'fecha_desde', 'fecha_hasta')
 
 admin.site.register(Certificado)
 admin.site.register(TipoCertificado)

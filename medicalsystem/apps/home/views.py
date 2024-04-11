@@ -48,6 +48,6 @@ class RegisterView(View):
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
             login(request, user)
-            return redirect('/login/')  # Cambia 'pagina_principal' a la URL deseada.
+            return redirect('/login')  # Cambia 'pagina_principal' a la URL deseada.
 
         return render(request, self.template_name, {'form': form})
