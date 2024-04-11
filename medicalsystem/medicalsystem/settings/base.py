@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'apps.socio',
 ]
 
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = '/'
+
 JAZZMIN_SETTINGS = {
     "topmenu_links": [
         # external url that opens in a new window (Permissions can be added)
@@ -122,10 +125,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "es-ar"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 USE_I18N = True
 
 USE_TZ = True
+
+DATE_FORMAT = 'd/m/Y'
+
 
 
