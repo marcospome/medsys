@@ -5,10 +5,21 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import Turno
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+    format = '%d/%m/%Y'
+
 class TurnoAdminForm(forms.ModelForm):
     class Meta:
         model = Turno
         fields = '__all__'
+        widgets = {
+            'fecha': DateInput(),
+        }
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data['fecha']
+        return fecha.strftime('%Y-%m-%d')
 
     def clean(self):
         cleaned_data = super().clean()
@@ -20,12 +31,6 @@ class TurnoAdminForm(forms.ModelForm):
             if turno_existente:
                 raise ValidationError(_("El horario seleccionado ya está reservado por otro médico en la misma fecha. Por favor, seleccione otro horario, otra fecha o consulte con otro médico."), code='invalid')
         return cleaned_data
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['horario'].error_messages = {
-            'invalid': _("El horario seleccionado ya está reservado por otro médico en la misma fecha. Por favor, seleccione otro horario, otra fecha o consulte con otro médico.")
-        }
 
 class TurnoAdmin(admin.ModelAdmin):
     list_display = ['fecha', 'horario', 'socio', 'usuario']
@@ -49,5 +54,11 @@ class TurnoAdmin(admin.ModelAdmin):
                         horarios_disponibles.append('0')
                     kwargs['choices'] = [(choice[0], choice[1]) for choice in Turno.HORARIOS if choice[0] in horarios_disponibles]
         return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.groups.filter(name='Medico').exists():
+            return qs.filter(usuario=request.user)
+        return qs
 
 admin.site.register(Turno, TurnoAdmin)
