@@ -77,7 +77,7 @@ class Paciente(models.Model):
     casilla_de_mail = models.EmailField(validators=[EmailValidator(message="Ingresa un correo válido")], blank=True)
     domicilio = models.ForeignKey('Domicilio', on_delete=models.SET_NULL, blank=True, null=True)
     referente_parroquial = models.ForeignKey('Referente', on_delete=models.SET_NULL, blank=True, null=True)
-    responsable_de_carga = models.ForeignKey('auth.User', on_delete=models.SET_NULL, blank=True, null=True)
+    responsable_de_carga = models.ForeignKey('auth.User', on_delete=models.SET_NULL, blank=True, null=True, editable=False)
     monotributo = models.CharField('Monotributo', max_length=1, choices=TIPO_MONOTRIBUTO, default='0')
     dni_foto_frente = models.FileField(upload_to='dni/', blank=True, null=True)
     dni_foto_dorso = models.FileField(upload_to='dni/', blank=True, null=True)

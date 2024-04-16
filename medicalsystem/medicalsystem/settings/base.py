@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'apps.base',
     'apps.turno',
     'apps.socio',
+    'apps.historialesclinicos',
+    'ckeditor',
 ]
 
 LOGIN_REDIRECT_URL = '/admin/'
@@ -134,4 +136,12 @@ USE_TZ = True
 DATE_FORMAT = 'd/m/Y'
 
 
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'height': 'full', 
+        'width': 'full', 
+    },
+}
 

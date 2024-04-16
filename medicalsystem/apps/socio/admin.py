@@ -32,10 +32,16 @@ class PacienteAdmin(CustomImportExportModelAdmin):
         'apellidos',
         'calcular_edad',
         'credencial',
+        'responsable_de_carga',
     )
 
     resource_class = PacienteResource
 
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            # Si el objeto no tiene clave primaria (es decir, es un nuevo registro)
+            obj.responsable_de_carga = request.user
+        super().save_model(request, obj, form, change)
 
     def calcular_edad(self, obj):
         return obj.calcular_edad()
