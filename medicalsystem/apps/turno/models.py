@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
 from apps.socio.models import Paciente
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.contrib.auth import get_user_model
 
 class Turno(models.Model):
     HORARIOS = (
@@ -19,9 +22,15 @@ class Turno(models.Model):
     fecha = models.DateField(verbose_name='Fecha del turno')
     horario = models.CharField(max_length=2, choices=HORARIOS, default='0', verbose_name='Horario del turno')
     observacion = models.CharField(max_length=300, blank=True)
-    activo = models.BooleanField(default=True, verbose_name='¿Turno Activo?', null=False)
+    activo = models.BooleanField(default=True, verbose_name='¿Turno Activo?')
     socio = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Usuario asignado')
-    
+    usuario = models.ForeignKey(User, related_name='turnos_asignados', on_delete=models.SET_NULL, blank=False, null=True, verbose_name='Medico asignado')
+    responsable_de_carga = models.ForeignKey(User, related_name='turnos_responsable', on_delete=models.SET_NULL, null=True, editable=False)
+
     def __str__(self):
         return f'Turno de {self.socio} - {self.fecha} - {dict(self.HORARIOS)[self.horario]}'
+
+@receiver(pre_save, sender=Turno)
+def asignar_responsable_de_carga(sender, instance, **kwargs):
+    if not instance.responsable_de_carga:
+        instance.responsable_de_carga = get_user_model().objects.get(id=instance.usuario.id)

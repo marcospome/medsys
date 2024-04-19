@@ -33,7 +33,7 @@ class TurnoAdminForm(forms.ModelForm):
         return cleaned_data
 
 class TurnoAdmin(admin.ModelAdmin):
-    list_display = ['fecha', 'horario', 'socio', 'usuario']
+    list_display = ['fecha', 'horario', 'socio', 'usuario', 'responsable_de_carga']
     form = TurnoAdminForm
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -60,5 +60,10 @@ class TurnoAdmin(admin.ModelAdmin):
         if request.user.groups.filter(name='Medico').exists():
             return qs.filter(usuario=request.user)
         return qs
+
+    def save_model(self, request, obj, form, change):
+        if not obj.responsable_de_carga:  # Si no se ha asignado un responsable de carga
+            obj.responsable_de_carga = request.user  # Asigna el usuario autenticado
+        obj.save()
 
 admin.site.register(Turno, TurnoAdmin)
