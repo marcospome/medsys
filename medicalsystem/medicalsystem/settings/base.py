@@ -127,14 +127,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "es-ar"
 
-TIME_ZONE = 'America/Argentina/Buenos_Aires'
-
-USE_I18N = True
-
-USE_TZ = True
-
-DATE_FORMAT = 'd/m/Y'
-
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
@@ -144,4 +136,9 @@ CKEDITOR_CONFIGS = {
         'width': 'full', 
     },
 }
+
+
+USE_L10N = False
+
+DATE_FORMAT = "%d/%m/%Y"
 
