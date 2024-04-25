@@ -54,9 +54,9 @@ class PacienteAdmin(CustomImportExportModelAdmin):
 
     telefono_display.short_description = "Teléfono"
 
-    search_fields = ('dni',)
+    search_fields = ('dni', 'dnititular',)
     
-    list_filter = ['categoria', 'monotributo', 'credencial_entregada']
+    list_filter = ['categoria', 'monotributo', 'dni']
 
 
 class DomicilioAdmin(admin.ModelAdmin):
