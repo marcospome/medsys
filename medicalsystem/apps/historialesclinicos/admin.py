@@ -5,7 +5,7 @@ from .models import HistorialClinico
 class HistorialClinicoAdmin(admin.ModelAdmin):
     # Lista de campos a mostrar en la lista de registros
     list_display = ('get_fecha_display', 'socio', 'usuario', 'observacion_plain')
-
+    list_filter = ['socio']
 
 
 # ---------------------------- METODOS/LOGICA DEL ADMISTRADOR DE DJANGO PARA EL MODULO DE HISTORIALES CLINICOS ----------------------------

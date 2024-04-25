@@ -111,7 +111,7 @@ class Paciente(models.Model):
 
     # Función que devuelve unicamente el apellido y nombre del paciente.
     def __str__(self):  
-        return f"{self.apellidos}, {self.nombres}"
+        return f"DNI: {self.dni}, {self.apellidos} {self.nombres}"
 
 # ---------------------- FIN Modelo "PACIENTE" ----------------------
 

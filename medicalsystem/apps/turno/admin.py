@@ -55,6 +55,7 @@ class TurnoAdmin(admin.ModelAdmin):
     list_display = ['fecha', 'horario', 'socio', 'usuario', 'responsable_de_carga', 'activo']
     # Asocia el formulario personalizado al modelo Turno en el panel de administración
     form = TurnoAdminForm
+    list_filter = ['socio', 'activo']
 
     # Método para traer unicamente los usuarios con rol Medico en la lista de "Medico Asignado".
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
