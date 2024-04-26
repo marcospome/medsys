@@ -12,8 +12,10 @@
         <br>
         <img src="{% static 'img/base/logo.png' %}" alt="logo"/>
         <h1>Iniciar sesión</h1>
-        {% if error_message %}
-            <p class="error-message">{{ error_message }}</p>
+        {% if messages %}
+            {% for message in messages %}
+                <p class="error-message">{{ message }}</p>
+            {% endfor %}
         {% endif %}
         <form method="post" action="{% url 'custom_login' %}">
             {% csrf_token %}

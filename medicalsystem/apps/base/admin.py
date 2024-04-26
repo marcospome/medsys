@@ -8,6 +8,10 @@ class CustomUserAdmin(UserAdmin):
     get_groups.short_description = 'Grupo'  # Define el nombre de la columna en el admin
 
     list_display = ('username', 'first_name', 'last_name', 'email', 'get_groups', 'is_staff')  # Agregar 'get_groups'
+    list_filter = [
+        'username',
+        'groups',
+    ]
 
     def get_fieldsets(self, request, obj=None):
         # Copia los fieldsets predeterminados

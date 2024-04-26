@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.utils.html import strip_tags
+from django.utils.html import strip_tags, mark_safe
 from .models import HistorialClinico
 
 class HistorialClinicoAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class HistorialClinicoAdmin(admin.ModelAdmin):
 
     # Remueve las etiquetas HTML de la observación para mostrarla sin formato en la lista de registros
     def observacion_plain(self, obj):
-        return strip_tags(obj.observacion)
+        return mark_safe(strip_tags(obj.observacion))
     observacion_plain.short_description = 'Observación'
 
     # Define alias para los métodos de observación

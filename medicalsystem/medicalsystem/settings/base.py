@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apps.socio',
     'apps.historialesclinicos',
     'ckeditor',
+    'import_export',
 ]
 
 LOGIN_REDIRECT_URL = '/admin/'
@@ -132,13 +133,22 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 
 CKEDITOR_CONFIGS = {
     'default': {
-        'height': 'full', 
-        'width': 'full', 
+        'height': 'auto', # Ajusta automáticamente la altura según el contenido
+        'width': '100%', # Utiliza el 100% del ancho disponible
+        'toolbar': [],  # Elimina todas las opciones de la barra de herramientas
+        'removePlugins': 'elementspath', # Elimina la ruta del elemento
+        'uiColor': '#FFFFFF',# Color de fondo de la interfaz
+        'resize_enabled': True, # Habilita la capacidad de cambiar el tamaño del editor
     },
 }
+
+
+
+
 
 
 USE_L10N = False
 
 DATE_FORMAT = "%d/%m/%Y"
 
+DEFAULT_CHARSET = 'utf-8'

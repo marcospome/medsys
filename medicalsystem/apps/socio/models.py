@@ -90,7 +90,7 @@ class Paciente(models.Model):
     # Ajustes visuales
     class Meta:
         verbose_name = 'Socio' # Titulo.
-        verbose_name_plural = 'Registro de socios' # Titulo Plural.
+        verbose_name_plural = 'Registro de socio' # Titulo Plural.
 
     # ----------- Funciones -----------
     
@@ -138,9 +138,9 @@ class TipoCertificado(models.Model):
 # ---------------------- Modelo "Certificado" ----------------------
 
 class Certificado(models.Model):
-    certificado = models.FileField(upload_to='certificados/')
+    certificado = models.FileField(upload_to='certificados/', null=True, blank=True)
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    tipocertificado = models.ForeignKey(TipoCertificado, on_delete=models.CASCADE)
+    tipocertificado = models.ForeignKey(TipoCertificado, on_delete=models.CASCADE, verbose_name='Tipo de certificado')
     class Meta:
         verbose_name = 'Certificado'
         verbose_name_plural = 'Registro de certificados'

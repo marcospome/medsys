@@ -1,13 +1,11 @@
 from django.shortcuts import render, redirect
-
-# Create your views here.
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, View
 from django.contrib.auth import authenticate, login
-from django.views import View
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
-class IndexView (TemplateView):
-    template_name='home/index.html' # ruta donde se cuentra el template ¡Recordar que se ubica en la carpeta template a la altura del manage.py!
+class IndexView(TemplateView):
+    template_name = 'home/index.html'
 
 class CustomLoginView(View):
     template_name = 'home/login.html'
@@ -16,20 +14,20 @@ class CustomLoginView(View):
         return render(request, self.template_name)
 
     def post(self, request):
-        error_message = None
-
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            login(request, user)
-            return redirect('/admin/')  # Cambia 'pagina_principal' a la URL deseada.
+            if user.is_staff:
+                login(request, user)
+                return redirect('/admin/')  # Cambia 'pagina_principal' a la URL deseada.
+            else:
+                messages.error(request, "Este usuario no está autorizado para ingresar")
         else:
-            error_message = "Usuario o contraseña incorrectos"
+            messages.error(request, "Usuario o contraseña incorrectos")
 
-        return render(request, self.template_name, {'error_message': error_message})
-
+        return render(request, self.template_name)
 
 class RegisterView(View):
     template_name = 'home/register.html'
