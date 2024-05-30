@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Paciente</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-bottom: none;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .card-body p {
+            margin-bottom: 0.5rem;
+        }
+        .list-group-item {
+            border: none;
+            padding: 0.75rem 1.25rem;
+        }
+        .fixed-bottom-right {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="h4">Información del Paciente</h1>
+            </div>
+            <div class="card-body">
+                <p><strong>Nombre:</strong> {{ paciente.nombres }} {{ paciente.apellidos }}</p>
+                <p><strong>DNI:</strong> {{ paciente.dni }} </p>
+                <p><strong>Número de Teléfono:</strong> {{ paciente.telefono.numero_de_telefono }}</p>
+                <p><strong>Correo Electrónico:</strong> {{ paciente.casilla_de_mail }}</p>
+                <p><strong>Sexo:</strong> {{ paciente.get_sex_display }}</p>
+                <p><strong>Número de Credencial:</strong> {{ paciente.credencial }}</p>
+                <p><strong>Tipo de Credencial:</strong> {{ paciente.get_categoria_display }}</p>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2 class="h5">Historial de Turnos</h2>
+            </div>
+            <div class="card-body">
+                {% if turnos %}
+                    <div class="row">
+                        {% for turno in turnos %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Turno</h5>
+                                        <p class="card-text"><strong>Fecha:</strong> {{ turno.fecha }}</p>
+                                        <p class="card-text"><strong>Horario:</strong> {{ turno.get_horario_display }}</p>
+                                        <p class="card-text"><strong>Estado:</strong> {{ turno.get_estado_display }}</p>
+                                        <p class="card-text"><strong>Médico Asignado:</strong> {% if turno.usuario %}{{ turno.usuario.first_name }} {{ turno.usuario.last_name }}{% else %}No asignado{% endif %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No hay turnos registrados para este paciente.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2 class="h5">Historiales Clínicos</h2>
+            </div>
+            <div class="card-body">
+                {% for historial in historiales %}
+                    <div class="border-bottom mb-3 pb-3">
+                        <h4>Motivo de Consulta: {{ historial.motivo }}</h4>
+                        <p><strong>Fecha de carga:</strong> {{ historial.fecha }}</p>
+                        <p><strong>Antecedentes Familiares:</strong> {{ historial.antecedentefamiliar }}</p>
+                        <p><strong>Enfermedad Actual:</strong> {{ historial.enfermedad }}</p>
+                        <p><strong>Indicación:</strong> {{ historial.indicacion }}</p>
+                        <p><strong>Problema:</strong> {{ historial.problema }}</p>
+                        <p><strong>Detalle:</strong> {{ historial.Detalle }}</p>
+                        <p><strong>Médico Responsable:</strong> {{ historial.usuario }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <button onclick="history.back()" class="btn btn-primary fixed-bottom-right">Volver Atrás</button>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

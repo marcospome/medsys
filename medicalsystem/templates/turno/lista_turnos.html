@@ -1,0 +1,248 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Turnos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/turno/lista.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .container {
+            position: relative;
+        }
+        .btn-agregar-turno {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .check {
+            font-size: 1.5em;
+        }
+        .check-green {
+            color: green;
+        }
+        .check-red {
+            color: red;
+        }
+        .filters {
+            margin-bottom: 20px;
+        }
+        /* Estilo para select2 similar a form-select */
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da; /* Color del borde */
+            border-radius: .25rem; /* Borde redondeado */
+            height: calc(2.25rem + 2px); /* Altura similar */
+            padding: .375rem .75rem; /* Espaciado interno similar */
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: calc(2.25rem + 2px); /* Ajuste de altura para la flecha */
+        }
+        /* Estilo para los estados de los turnos */
+        .estado-container {
+            display: inline-block;
+            padding: 5px 10px; /* Espaciado interno del botón */
+            border-radius: 5px; /* Borde redondeado del botón */
+        }
+        .estado-pendiente {
+            background-color: pink; /* Color del estado "Pendiente de Confirmación" */
+        }
+        .estado-atendido {
+            background-color: #008000; /* Color del estado "Atendido" */
+        }
+        .estado-ausente-aviso {
+            background-color: #d3d610; /* Color del estado "Ausente con aviso" */
+        }
+        .estado-ausente-sin-aviso {
+            background-color: #438f9c; /* Color del estado "Ausente sin aviso" */
+        }
+        .estado-confirmado {
+            background-color: #ffa733; /* Color del estado "Confirmado" */
+        }
+        .estado-cancelado {
+            background-color: #FF0000; /* Color del estado "Cancelado" */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Administración de Turnos</h1>
+        <a href="/turno/crear-turno/" class="btn btn-success btn-agregar-turno">Agregar Turno</a>
+
+        <!-- Filtros y Orden -->
+        <form method="get" class="filters">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="orden" class="form-label">Ordenar por fecha</label>
+                    <select id="orden" name="orden" class="form-select">
+                        <option value="asc" {% if orden == 'asc' %}selected{% endif %}>Ascendente</option>
+                        <option value="desc" {% if orden == 'desc' %}selected{% endif %}>Descendente</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="medico" class="form-label">Filtrar por médico</label>
+                    <select id="medico" name="medico" class="form-select select2" style="width: 100%;">
+                        <option value="">Todos</option>
+                        {% for medico in medicos %}
+                            <option value="{{ medico.id }}" {% if request.GET.medico == medico.id %}selected{% endif %}>{{ medico.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="socio" class="form-label">Filtrar por socio</label>
+                    <select id="socio" name="socio" class="form-select select2" style="width: 100%;">
+                        <option value="">Todos</option>
+                        {% for socio in socios %}
+                            <option value="{{ socio.credencial }}" {% if request.GET.socio == socio.credencial %}selected{% endif %}>{{ socio.apellidos }} {{ socio.nombres }}, DNI: {{ socio.dni }}</option>
+                        {% endfor %}
+                    </select>
+                </div>      
+                <div class="col-md-3">
+                    <label for="activo" class="form-label">Activo/Inactivo</label>
+                    <select id="activo" name="activo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="true" {% if request.GET.activo == 'true' %}selected{% endif %}>Activo</option>
+                        <option value="false" {% if request.GET.activo == 'false' %}selected{% endif %}>Inactivo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Horario</th>
+                            <th>Paciente</th>
+                            <th>Responsable de Carga</th>
+                            <th>Médico Asignado</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for turno in turnos %}
+                            <tr>
+                                <td>{{ turno.fecha }}</td>
+                                <td>{{ turno.get_horario_display }}</td>
+                                <td><a href="{% url 'detalle_paciente' turno.socio.credencial %}">{{ turno.socio }}</a></td>
+                                <td>{{ turno.responsable_de_carga.first_name }} {{ turno.responsable_de_carga.last_name }}</td>
+                                <td>{{ turno.usuario.first_name }} {{ turno.usuario.last_name }}</td>
+                                <td>
+                                    <div class="estado-container {% if turno.estado == '0' %}estado-pendiente{% elif turno.estado == '1' %}estado-atendido{% elif turno.estado == '2' %}estado-ausente-aviso{% elif turno.estado == '3' %}estado-ausente-sin-aviso{% elif turno.estado == '4' %}estado-confirmado{% elif turno.estado == '5' %}estado-cancelado{% endif %}">
+                                        {{ turno.get_estado_display }}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+<!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-4">
+        {% if turnos.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page=1">&laquo; Primera</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ turnos.previous_page_number }}">Anterior</a>
+            </li>
+        {% endif %}
+
+        {% for num in turnos.paginator.page_range %}
+            {% if num == turnos.number %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num < turnos.number|add:2 and num > turnos.number|add:"-2" %}
+                <li class="page-item">
+                    <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if turnos.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ turnos.next_page_number }}">Siguiente</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ turnos.paginator.num_pages }}">Última &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar el select2 con el ancho al 100% y sin barra de búsqueda
+            $('.select2').select2({
+                width: '100%', // Establece el ancho al 100%
+                minimumResultsForSearch: Infinity // Desactiva la barra de búsqueda
+            });
+        });
+    </script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2();
+
+        // Capturar el evento de clic en el botón "Aplicar Filtros"
+        $('#apply-filter').click(function() {
+            // Obtener los valores de los filtros
+            var orden = $('#orden').val();
+            var medico = $('#medico').val();
+            var socio = $('#socio').val();
+            var activo = $('#activo').val();
+
+            // Construir la URL con los filtros aplicados
+            var url = '/turno/lista-turnos/?orden=' + orden + '&medico=' + medico + '&socio=' + socio + '&activo=' + activo;
+
+            // Redireccionar a la URL con los filtros aplicados
+            window.location.href = url;
+        });
+
+        // Intercepta los clics en los enlaces de paginación y agrega los filtros a la URL
+        $('.pagination a').click(function(event) {
+            event.preventDefault(); // Evitar la navegación predeterminada
+
+            var url = $(this).attr('href'); // Obtener la URL del enlace de paginación
+            var orden = $('#orden').val(); // Obtener el valor del filtro de orden
+            var medico = $('#medico').val(); // Obtener el valor del filtro de médico
+            var socio = $('#socio').val(); // Obtener el valor del filtro de socio
+            var activo = $('#activo').val(); // Obtener el valor del filtro de activo
+
+            // Agregar los filtros a la URL
+            url += '&orden=' + orden + '&medico=' + medico + '&socio=' + socio + '&activo=' + activo;
+
+            // Redireccionar a la URL con los filtros aplicados
+            window.location.href = url;
+        });
+
+        // Conservar los valores seleccionados en los filtros después de aplicarlos
+        var medicoValue = '{{ request.GET.medico }}';
+        var socioValue = '{{ request.GET.socio }}';
+
+        $('#medico').val(medicoValue).trigger('change');
+        $('#socio').val(socioValue).trigger('change');
+    });
+</script>
+
+    
+</body>
+</html>

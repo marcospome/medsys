@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from django.conf import settings
 from django.contrib.auth import views as auth_views
@@ -8,6 +8,8 @@ urlpatterns = [
     path('', views.IndexView.as_view()),
     path('login', views.CustomLoginView.as_view(), name='custom_login'),  # Define una URL con nombre 'custom_login'.
     path('register', views.RegisterView.as_view(), name='register'),
+    path('turno/', include('apps.turno.urls')),
+    path('socio/', include('apps.socio.urls')),
 
 ]
 

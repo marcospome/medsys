@@ -1,17 +1,17 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from .forms import CustomUserChangeForm
 
 class CustomUserAdmin(UserAdmin):
+    form = CustomUserChangeForm
+
     def get_groups(self, obj):
         return ', '.join([group.name for group in obj.groups.all()])
     get_groups.short_description = 'Grupo'  # Define el nombre de la columna en el admin
 
     list_display = ('username', 'first_name', 'last_name', 'email', 'get_groups', 'is_staff')  # Agregar 'get_groups'
-    list_filter = [
-        'username',
-        'groups',
-    ]
+    list_filter = ['username', 'groups']
 
     def get_fieldsets(self, request, obj=None):
         # Copia los fieldsets predeterminados
