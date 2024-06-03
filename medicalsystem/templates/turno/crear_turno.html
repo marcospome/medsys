@@ -71,10 +71,6 @@
                 {{ form.fecha }}
             </div>
             <div class="form-group">
-                {{ form.horario.label_tag }}
-                {{ form.horario }}
-            </div>
-            <div class="form-group">
                 {{ form.observacion.label_tag }}
                 {{ form.observacion }}
             </div>
@@ -93,6 +89,14 @@
                         <option value="{{ choice.0 }}">{{ choice.1 }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            <div class="form-group">
+                {{ form.horario.label_tag }}
+                {{ form.horario }}
+            </div>
+            <div class="form-group">
+                {{ form.estado.label_tag }}
+                {{ form.estado }}
             </div>
             <button type="submit" class="btn btn-primary btn-block">Guardar Turno</button>
         </form>

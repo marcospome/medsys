@@ -71,21 +71,13 @@ class Turno(models.Model):
 
     def __str__(self):
         return f'Turno de {self.socio} - {self.fecha} - {dict(self.HORARIOS)[self.horario]}'
-
-    def clean(self):
-        # Validar que no exista otro turno para la misma fecha, horario y médico
-        if self.activo and Turno.objects.filter(fecha=self.fecha, horario=self.horario, usuario=self.usuario, activo=True).exists():
-            raise ValidationError('Ya existe un turno activo para este médico en este horario y fecha.')
-
+    
     def save(self, *args, **kwargs):
-        # Validar si el turno está siendo creado o modificado
-        if not self.pk or (self.pk and not Turno.objects.filter(pk=self.pk, activo=True).exists()):
-            self.full_clean()  # Ejecutar la validación solo si el turno es nuevo o está inactivo
-        super().save(*args, **kwargs)
-
-    def cambiar_estado(self):
-        self.activo = not self.activo
-        self.save()
+        if self.pk:
+            previous = Turno.objects.get(pk=self.pk)
+            if previous.estado == '5' and self.estado != '5':
+                raise ValidationError("No se puede volver a habilitar un turno cancelado, favor de crear uno nuevo.")
+        super(Turno, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = 'Turnos'

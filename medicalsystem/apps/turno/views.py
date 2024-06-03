@@ -1,5 +1,5 @@
 # views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import TurnoForm
@@ -30,8 +30,6 @@ class CrearTurnoView(LoginRequiredMixin, View):
             turno.save()
             return redirect('turnos_list')  # Redirigir a la lista de turnos
         return render(request, self.template_name, {'form': form})
-
-
 
 class ListaTurnosView(LoginRequiredMixin, View):
     template_name = 'turno/lista_turnos.html'
@@ -102,7 +100,36 @@ class ObtenerHorariosDisponiblesView(LoginRequiredMixin, View):
             return JsonResponse({'error': 'Invalid parameters'}, status=400)
         
         fecha = parse_date(fecha)
-        horarios_ocupados = Turno.objects.filter(fecha=fecha, usuario_id=medico_id, activo=True).values_list('horario', flat=True)
+        
+        # Filtrar turnos activos que no están cancelados
+        horarios_ocupados = Turno.objects.filter(
+            fecha=fecha, 
+            usuario_id=medico_id, 
+            activo=True
+        ).exclude(estado='5').values_list('horario', flat=True)
+        
         horarios_disponibles = [(horario, text) for horario, text in Turno.HORARIOS if horario not in horarios_ocupados]
         
         return JsonResponse({'horarios': horarios_disponibles})
+    
+
+
+
+class EditarTurnoView(LoginRequiredMixin, View):
+    template_name = 'turno/editar_turno.html'
+    form_class = TurnoForm
+
+    def get(self, request, pk):
+        turno = get_object_or_404(Turno, pk=pk)
+        grupo_medico = Group.objects.get(name='Medico')
+        medicos = grupo_medico.user_set.all()
+        form = self.form_class(instance=turno, medicos=medicos)
+        return render(request, self.template_name, {'form': form, 'turno': turno})
+
+    def post(self, request, pk):
+        turno = get_object_or_404(Turno, pk=pk)
+        form = self.form_class(request.POST, instance=turno)
+        if form.is_valid():
+            form.save()
+            return redirect('turnos_list')  # Redirigir a la lista de turnos
+        return render(request, self.template_name, {'form': form, 'turno': turno})

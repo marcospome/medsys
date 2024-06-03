@@ -128,6 +128,7 @@
                             <th>Responsable de Carga</th>
                             <th>Médico Asignado</th>
                             <th>Estado</th>
+                            <th>Acciones</th> <!-- Nueva columna para el ícono de edición -->
                         </tr>
                     </thead>
                     <tbody>
@@ -142,6 +143,11 @@
                                     <div class="estado-container {% if turno.estado == '0' %}estado-pendiente{% elif turno.estado == '1' %}estado-atendido{% elif turno.estado == '2' %}estado-ausente-aviso{% elif turno.estado == '3' %}estado-ausente-sin-aviso{% elif turno.estado == '4' %}estado-confirmado{% elif turno.estado == '5' %}estado-cancelado{% endif %}">
                                         {{ turno.get_estado_display }}
                                     </div>
+                                </td>
+                                <td>
+                                    <a href="{% url 'editar_turno' turno.pk %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -184,6 +190,9 @@
         {% endif %}
     </ul>
 </nav>
+<div class="container mt-3 text-center">
+    <a href="/admin/" class="btn btn-primary">Volver a la página principal</a>
+</div>
 
 
     </div>

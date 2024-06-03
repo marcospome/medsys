@@ -3,19 +3,22 @@ from .models import Turno
 from apps.socio.models import Paciente
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 
 class TurnoForm(forms.ModelForm):
     medico = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Turno
-        fields = ['fecha', 'horario', 'observacion', 'socio', 'usuario']
+        fields = ['fecha', 'horario', 'observacion', 'socio', 'usuario', 'estado']  # Agregamos 'estado' al conjunto de campos
         widgets = {
-            'fecha': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'fecha': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
             'horario': forms.Select(attrs={'class': 'form-control'}),
             'observacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'socio': forms.Select(attrs={'class': 'form-control'}),
             'usuario': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),  # Agregamos readonly para el campo de estado
         }
 
     def __init__(self, *args, **kwargs):
@@ -26,6 +29,10 @@ class TurnoForm(forms.ModelForm):
             self.fields['horario'].queryset = Turno.objects.none()
         # Agregar atributo 'min' para la fecha mínima
         self.fields['fecha'].widget.attrs['min'] = datetime.now().strftime('%Y-%m-%d')
+        if self.instance and self.instance.estado == '5':
+            for field in self.fields:
+                self.fields[field].disabled = True
+
 
 class FiltroTurnosForm(forms.Form):
     medico = forms.ModelChoiceField(queryset=User.objects.filter(groups__name='Medico'), required=False, label='Médico')
