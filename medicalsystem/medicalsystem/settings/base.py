@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-377=xvwje#p-!9a2*7^j9-+aw-2yb2gb59^96r9(pk!_vrv=@u
 
 INSTALLED_APPS = [
     'jazzmin',
+    'tinymce',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,11 +46,37 @@ INSTALLED_APPS = [
 LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_REDIRECT_URL = '/'
 
+TINYMCE_DEFAULT_CONFIG = {
+    'height': 360,
+    'width': '100%',
+    'cleanup_on_startup': True,
+    'custom_undo_redo_levels': 20,
+    'selector': 'textarea',
+    'plugins': '''
+        textcolor save link image media preview codesample contextmenu
+        table code lists fullscreen  insertdatetime nonbreaking
+        contextmenu directionality searchreplace wordcount visualblocks
+        visualchars code fullscreen autolink lists  charmap print  hr
+        anchor pagebreak
+        ''',
+    'toolbar': '''
+        fullscreen preview bold italic underline | alignleft aligncenter
+        alignright alignjustify | bullist numlist outdent indent | link
+        image media | codesample |
+        ''',
+    'menubar': True,
+    'statusbar': True,
+    'importcss_append': True,
+    'file_picker_types': 'image',
+    'image_advtab': True,
+}
+
+
 JAZZMIN_SETTINGS = {
     "topmenu_links": [
         # external url that opens in a new window (Permissions can be added)
         {"name": "Página de inicio", "url": "/", "new_window": False},
-        {"name": "Gestión de turnos", "url": "/turno/lista-turnos/", "new_window": False},
+        {"name": "Administración de turnos", "url": "/turno/lista-turnos/", "new_window": False},
     ],
     "site_title": "MedicalSys",
     "site_header": "Library",

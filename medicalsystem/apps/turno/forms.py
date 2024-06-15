@@ -22,6 +22,7 @@ class TurnoForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+
         medicos = kwargs.pop('medicos', None)
         super().__init__(*args, **kwargs)
         if medicos is not None:
@@ -29,12 +30,21 @@ class TurnoForm(forms.ModelForm):
             self.fields['horario'].queryset = Turno.objects.none()
         # Agregar atributo 'min' para la fecha mínima
         self.fields['fecha'].widget.attrs['min'] = datetime.now().strftime('%Y-%m-%d')
-        if self.instance and self.instance.estado == '5':
+        if self.instance and self.instance.estado  in ['2', '3', '5', '1']:  # '5' Cancelado  ,'1' Atendido, '2' Ausente con aviso, '3' Ausente sin aviso'
             for field in self.fields:
                 self.fields[field].disabled = True
+        
+        # Si el estado actual del turno no es 'Atendido', excluye 'Atendido' del campo estado
+        if self.instance and self.instance.estado != '1':  # '1' Atendido
+            exclude_choices = ['1']
+            self.fields['estado'].choices = [(key, value) for key, value in self.fields['estado'].choices if key not in exclude_choices]
 
 
 class FiltroTurnosForm(forms.Form):
     medico = forms.ModelChoiceField(queryset=User.objects.filter(groups__name='Medico'), required=False, label='Médico')
     socio = forms.ModelChoiceField(queryset=Paciente.objects.all(), required=False, label='Socio')
     activo = forms.BooleanField(required=False, label='Activo')
+
+
+        
+

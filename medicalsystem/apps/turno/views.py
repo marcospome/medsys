@@ -9,11 +9,38 @@ from django.contrib.auth.models import User, Group
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.utils.dateparse import parse_date
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import redirect
+from functools import wraps
+from django.utils.decorators import method_decorator
+from django.contrib import messages
+
+
+
+
+def role_required(roles):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                messages.error(request, "No tiene acceso a este módulo")
+                return redirect('/admin/')
+            if not hasattr(request.user, 'groups'):
+                messages.error(request, "No tiene acceso a este módulo")
+                return redirect('/admin/')
+            user_groups = request.user.groups.values_list('name', flat=True)
+            if not any(role in user_groups for role in roles):
+                messages.error(request, "No tiene acceso a este módulo")
+                return redirect('/admin/')
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
 
 class CrearTurnoView(LoginRequiredMixin, View):
     template_name = 'turno/crear_turno.html'
     form_class = TurnoForm
 
+    @method_decorator(role_required(['Administrativo', 'Super Administrativo']))
     def get(self, request):
         grupo_medico = Group.objects.get(name='Medico')
         medicos = User.objects.filter(groups=grupo_medico)
@@ -31,12 +58,21 @@ class CrearTurnoView(LoginRequiredMixin, View):
             return redirect('turnos_list')  # Redirigir a la lista de turnos
         return render(request, self.template_name, {'form': form})
 
+
 class ListaTurnosView(LoginRequiredMixin, View):
     template_name = 'turno/lista_turnos.html'
-    paginate_by = 4  # Número de turnos por página
+    paginate_by = 8  # Número de turnos por página
 
     def get(self, request):
+        user = request.user
         turnos = Turno.objects.all()
+
+        # Filtrar turnos si el usuario es médico
+        if user.groups.filter(name='Medico').exists():
+            turnos = turnos.filter(usuario=user)
+        else:
+            def dispatch(self, *args, **kwargs):
+                return super().dispatch(*args, **kwargs)
 
         # Ordenar por fecha
         orden = request.GET.get('orden', 'asc')
@@ -55,12 +91,10 @@ class ListaTurnosView(LoginRequiredMixin, View):
         if socio_id:
             turnos = turnos.filter(socio__credencial=socio_id)
 
-        # Filtrar por activo
-        activo = request.GET.get('activo', None)
-        if activo == 'true':
-            turnos = turnos.filter(activo=True)
-        elif activo == 'false':
-            turnos = turnos.filter(activo=False)
+        # Filtrar por estado
+        estado = request.GET.get('estado', None)
+        if estado:
+            turnos = turnos.filter(estado=estado)
 
         # Obtener lista de médicos y socios
         grupo_medico = Group.objects.get(name='Medico')
@@ -82,11 +116,16 @@ class ListaTurnosView(LoginRequiredMixin, View):
         context = {
             'turnos': turnos_paginados,
             'orden': orden,
+            'medico_id': medico_id,
+            'socio_id': socio_id,
+            'estado': estado,
+            'turno_estados': Turno.ESTADOS,
             'medicos': medicos,
             'socios': socios,
+            'page_obj': turnos_paginados,
+            'is_medico': user.groups.filter(name='Medico').exists()  # Agregar la variable de contexto
         }
         return render(request, self.template_name, context)
-
 
 
 
@@ -116,20 +155,24 @@ class ObtenerHorariosDisponiblesView(LoginRequiredMixin, View):
 
 
 class EditarTurnoView(LoginRequiredMixin, View):
+    
     template_name = 'turno/editar_turno.html'
     form_class = TurnoForm
 
+    @method_decorator(role_required(['Administrativo', 'Super Administrativo']))
     def get(self, request, pk):
         turno = get_object_or_404(Turno, pk=pk)
         grupo_medico = Group.objects.get(name='Medico')
         medicos = grupo_medico.user_set.all()
         form = self.form_class(instance=turno, medicos=medicos)
-        return render(request, self.template_name, {'form': form, 'turno': turno})
+        return render(request, self.template_name, {'form': form, 'turno': turno, 'estado_turno': turno.estado})
 
     def post(self, request, pk):
         turno = get_object_or_404(Turno, pk=pk)
-        form = self.form_class(request.POST, instance=turno)
+        grupo_medico = Group.objects.get(name='Medico')
+        medicos = grupo_medico.user_set.all()
+        form = self.form_class(request.POST, instance=turno, medicos=medicos)
         if form.is_valid():
             form.save()
             return redirect('turnos_list')  # Redirigir a la lista de turnos
-        return render(request, self.template_name, {'form': form, 'turno': turno})
+        return render(request, self.template_name, {'form': form, 'turno': turno, 'estado_turno': turno.estado})

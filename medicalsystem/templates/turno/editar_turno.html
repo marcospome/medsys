@@ -48,16 +48,16 @@
 <body>
 <div class="container">
     <h1>Editar Turno</h1>
-    {% if form.instance.estado == '5' %}
+    {% if estado_turno == '5' %}
     <div class="alert alert-danger" role="alert">
-      No se puede editar el turno debido a que está cancelado, favor de crear uno nuevo.
+        No se puede editar el turno debido a que está cancelado, favor de crear uno nuevo.
     </div>
-  {% endif %}
-    <form method="post">
+    {% endif %}
+    <form id="editar-turno-form" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="submit" id="guardar-btn" class="btn btn-primary" disabled>Guardar</button>
             <a href="{% url 'turnos_list' %}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
@@ -92,14 +92,39 @@
                         data.horarios.forEach(function(horario) {
                             horarioSelect.append('<option value="' + horario[0] + '">' + horario[1] + '</option>');
                         });
+                        validarFormulario();
                     }
                 });
+            }
+        }
+
+        function validarFormulario() {
+            var medicoId = $('#id_usuario').val();
+            var fecha = $('#id_fecha').val();
+            var horario = $('#id_horario').val();
+            var socio = $('#id_socio').val();
+
+            if (medicoId && fecha && horario && socio) {
+                $('#guardar-btn').prop('disabled', false);
+            } else {
+                $('#guardar-btn').prop('disabled', true);
             }
         }
 
         $('#id_usuario, #id_fecha').change(function() {
             actualizarHorariosDisponibles();
         });
+
+        $('#id_horario, #id_socio').change(function() {
+            validarFormulario();
+        });
+
+        $('#editar-turno-form').on('input change', 'input, select', function() {
+            validarFormulario();
+        });
+
+        // Inicializar la validación al cargar la página
+        validarFormulario();
     });
 </script>
 </html>

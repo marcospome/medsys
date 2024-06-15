@@ -10,6 +10,7 @@ urlpatterns = [
     path('register', views.RegisterView.as_view(), name='register'),
     path('turno/', include('apps.turno.urls')),
     path('socio/', include('apps.socio.urls')),
+    path('historiaclinica/', include('apps.historialesclinicos.urls')),
 
 ]
 
