@@ -11,6 +11,8 @@ class PacienteDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         paciente = self.get_object()
+        user = self.request.user
         context['turnos'] = Turno.objects.filter(socio=paciente)
         context['historiales'] = HistorialClinico.objects.filter(socio=paciente)
+        context['is_medicops'] = user.groups.filter(name='Psiquiatría').exists()
         return context
