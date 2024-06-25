@@ -11,8 +11,9 @@ class TurnoForm(forms.ModelForm):
 
     class Meta:
         model = Turno
-        fields = ['fecha', 'horario', 'observacion', 'socio', 'usuario', 'estado']  # Agregamos 'estado' al conjunto de campos
+        fields = ['fecha', 'horario', 'observacion', 'socio', 'usuario', 'estado', 'area']  # Agregamos 'estado' al conjunto de campos
         widgets = {
+            'area': forms.Select(attrs={'class': 'form-control'}),
             'fecha': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
             'horario': forms.Select(attrs={'class': 'form-control'}),
             'observacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),

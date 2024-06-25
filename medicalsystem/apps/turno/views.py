@@ -42,21 +42,32 @@ class CrearTurnoView(LoginRequiredMixin, View):
 
     @method_decorator(role_required(['Administrativo', 'Super Administrativo']))
     def get(self, request):
-        grupo_medico = Group.objects.get(name='Medico')
-        medicos = User.objects.filter(groups=grupo_medico)
-        form = self.form_class(medicos=medicos)
-        return render(request, self.template_name, {'form': form})
+        area = request.GET.get('area', 'CG')  # Default to 'Consulta General'
+        medicos = self.get_medicos_por_area(area)
+        form = self.form_class(initial={'area': area}, medicos=medicos)
+        return render(request, self.template_name, {'form': form, 'area': area})
 
     def post(self, request):
-        grupo_medico = Group.objects.get(name='Medico')
-        medicos = User.objects.filter(groups=grupo_medico)
+        area = request.POST.get('area', 'CG')
+        medicos = self.get_medicos_por_area(area)
         form = self.form_class(request.POST, medicos=medicos)
         if form.is_valid():
             turno = form.save(commit=False)
             turno.responsable_de_carga = request.user
             turno.save()
             return redirect('turnos_list')  # Redirigir a la lista de turnos
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'area': area})
+
+    def get_medicos_por_area(self, area):
+        roles_por_area = {
+            'OD': 'Odontología',
+            'CG': 'Medico',
+            'PS': 'Psiquiatría',
+            'OT': 'Medico'  # Asumir un rol general para 'Otros'
+        }
+        rol = roles_por_area.get(area, 'Medico')
+        grupo = Group.objects.get(name=rol)
+        return User.objects.filter(groups=grupo)
 
 
 class ListaTurnosView(LoginRequiredMixin, View):

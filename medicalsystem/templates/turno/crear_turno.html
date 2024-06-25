@@ -67,6 +67,10 @@
             {% csrf_token %}
             {{ form.media }}
             <div class="form-group">
+                {{ form.area.label_tag }}
+                {{ form.area }}
+            </div>
+            <div class="form-group">
                 {{ form.fecha.label_tag }}
                 {{ form.fecha }}
             </div>

@@ -60,6 +60,14 @@ class Turno(models.Model):
         ('5', 'Cancelado')
     )
 
+    AREAS = (
+        ('OD', 'Odontología'),
+        ('CG', 'Consulta General'),
+        ('PS', 'Psiquiatría'),
+        ('OT', 'Otros')
+    )
+
+    area = models.CharField(max_length=2, choices=AREAS, default='CG', verbose_name='Área')
     fecha = models.DateField(verbose_name='Fecha del turno')
     horario = models.CharField(max_length=2, choices=HORARIOS, default='0', verbose_name='Horario del turno')
     observacion = models.CharField(max_length=300, blank=True)
@@ -78,6 +86,8 @@ class Turno(models.Model):
             if previous.estado == '5' and self.estado != '5':
                 raise ValidationError("No se puede volver a habilitar un turno cancelado, favor de crear uno nuevo.")
         super(Turno, self).save(*args, **kwargs)
+
+
 
     class Meta:
         verbose_name_plural = 'Turnos'

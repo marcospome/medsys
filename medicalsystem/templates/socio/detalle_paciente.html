@@ -99,12 +99,6 @@
                         <p><strong>Indicación:</strong> {{ historial.indicacion }}</p>
                         <p><strong>Problema:</strong> {{ historial.problema }}</p>
                         <p><strong>Detalle:</strong> {{ historial.Detalle }}</p>
-                        {% if is_medicops %}
-                        <p><strong>Observación Psiquiátrica:</strong> {{ historial.observacionps }}</p>
-                        {% if not historial.observacionps %}
-                        <a href="{% url 'editar_observacion_psiquiatrica' historial.id %}" class="btn btn-info">Agregar Observación Psiquiátrica</a>
-                        {% endif %}
-                        {% endif %}
                         <p><strong>Médico Responsable:</strong> {{ historial.usuario }}</p>
                     </div>
                 {% endfor %}

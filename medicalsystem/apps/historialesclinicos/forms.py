@@ -4,11 +4,10 @@ from .models import HistorialClinico
 class HistorialClinicoForm(forms.ModelForm):
     class Meta:
         model = HistorialClinico
-        fields = ['motivo', 'antecedentefamiliar', 'enfermedad', 'indicacion', 'problema', 'Detalle', 'observacionps']
+        fields = ['motivo', 'antecedentefamiliar', 'enfermedad', 'indicacion', 'problema', 'Detalle', 'area']
 
-class ObservacionPsiquiatricaForm(forms.ModelForm):
-    observacionps = forms.CharField(label='Observación Psiquiátrica', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 5}))
+        widgets = {
+            'area': forms.Select(attrs={'class': 'form-control'}),
+        }
 
-    class Meta:
-        model = HistorialClinico
-        fields = ['observacionps']
+
