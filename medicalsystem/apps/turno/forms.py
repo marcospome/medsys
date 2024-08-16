@@ -30,7 +30,6 @@ class TurnoForm(forms.ModelForm):
             self.fields['usuario'].queryset = medicos
             self.fields['horario'].queryset = Turno.objects.none()
         # Agregar atributo 'min' para la fecha mínima
-        self.fields['fecha'].widget.attrs['min'] = datetime.now().strftime('%Y-%m-%d')
         if self.instance and self.instance.estado  in ['2', '3', '5', '1']:  # '5' Cancelado  ,'1' Atendido, '2' Ausente con aviso, '3' Ausente sin aviso'
             for field in self.fields:
                 self.fields[field].disabled = True

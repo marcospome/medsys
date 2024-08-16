@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
 
 
-from apps.turno.models import Turno  # Asegúrate de importar correctamente el modelo Turno
+from apps.turno.models import Turno  
 from .forms import HistorialClinicoForm
 
 def crear_historial_clinico(request, turno_id):

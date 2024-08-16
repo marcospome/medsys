@@ -5,12 +5,19 @@
     <meta charset="UTF-8">
     <title>Crear Turno</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS para diseño responsivo y componentes estilizados -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <!-- Select2 CSS para mejorar la apariencia de los selects -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS personalizado para el formulario -->
     <link rel="stylesheet" href="{% static 'css/turno/lista.css' %}">
+    
+    <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    
     <style>
         body {
             display: flex;
@@ -21,6 +28,7 @@
             font-family: 'Roboto', sans-serif;
             background-color: #f5f5f5;
         }
+        
         .form-container {
             background: #fff;
             padding: 30px;
@@ -29,27 +37,33 @@
             width: 100%;
             max-width: 500px;
         }
+        
         .form-container h1 {
             text-align: center;
             margin-bottom: 20px;
             font-size: 24px;
             color: #333;
         }
+        
         .form-control {
             margin-bottom: 15px;
         }
+        
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
         }
+        
         .btn-primary:hover {
             background-color: #0056b3;
             border-color: #004085;
         }
+        
         .form-text {
             font-size: 14px;
             color: #6c757d;
         }
+        
         .btn-agregar-turno {
             position: absolute;
             top: 20px;
@@ -66,18 +80,26 @@
         <form method="post">
             {% csrf_token %}
             {{ form.media }}
+            
+            <!-- Campo para seleccionar el área -->
             <div class="form-group">
                 {{ form.area.label_tag }}
                 {{ form.area }}
             </div>
+            
+            <!-- Campo para seleccionar la fecha -->
             <div class="form-group">
                 {{ form.fecha.label_tag }}
                 {{ form.fecha }}
             </div>
+            
+            <!-- Campo para observaciones -->
             <div class="form-group">
                 {{ form.observacion.label_tag }}
                 {{ form.observacion }}
             </div>
+            
+            <!-- Campo para seleccionar el socio con Select2 -->
             <div class="form-group">
                 {{ form.socio.label_tag }}
                 <select name="{{ form.socio.name }}" class="form-control select2">
@@ -86,6 +108,8 @@
                     {% endfor %}
                 </select>
             </div>
+            
+            <!-- Campo para seleccionar el usuario con Select2 -->
             <div class="form-group">
                 {{ form.usuario.label_tag }}
                 <select id="id_usuario" name="{{ form.usuario.name }}" class="form-control select2">
@@ -94,43 +118,54 @@
                     {% endfor %}
                 </select>
             </div>
+            
+            <!-- Campo para seleccionar el horario -->
             <div class="form-group">
                 {{ form.horario.label_tag }}
                 {{ form.horario }}
             </div>
+            
+            <!-- Campo para seleccionar el estado -->
             <div class="form-group">
                 {{ form.estado.label_tag }}
                 {{ form.estado }}
             </div>
+            
+            <!-- Botón para guardar el turno -->
             <button type="submit" class="btn btn-primary btn-block">Guardar Turno</button>
         </form>
     </div>
 
+    <!-- Scripts necesarios para la funcionalidad de Select2 y AJAX -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Inicializa Select2 en todos los selects con la clase 'select2'
             $('.select2').select2({
                 placeholder: 'Seleccione una opción',
                 allowClear: true,
                 width: '100%'
             });
 
+            // Función para actualizar los horarios disponibles
             function actualizarHorariosDisponibles() {
-                var medicoId = $('#id_usuario').val();
-                var fecha = $('#id_fecha').val();
+                var medicoId = $('#id_usuario').val();  // Obtiene el ID del médico seleccionado
+                var fecha = $('#id_fecha').val();  // Obtiene la fecha seleccionada
 
+                // Verifica que se hayan seleccionado tanto el médico como la fecha
                 if (medicoId && fecha) {
                     $.ajax({
-                        url: '{% url "obtener_horarios_disponibles" %}',
+                        url: '{% url "obtener_horarios_disponibles" %}',  // URL para la solicitud AJAX
                         data: {
                             medico_id: medicoId,
                             fecha: fecha
                         },
                         success: function(data) {
-                            var horarioSelect = $('#id_horario');
-                            horarioSelect.empty();
-                            horarioSelect.append('<option value="">---------</option>');
+                            var horarioSelect = $('#id_horario');  // Selecciona el campo de horarios
+                            horarioSelect.empty();  // Limpia las opciones actuales
+                            horarioSelect.append('<option value="">---------</option>');  // Agrega una opción por defecto
+                            // Agrega las nuevas opciones basadas en la respuesta AJAX
                             data.horarios.forEach(function(horario) {
                                 horarioSelect.append('<option value="' + horario[0] + '">' + horario[1] + '</option>');
                             });
@@ -139,8 +174,52 @@
                 }
             }
 
+            // Llama a la función para actualizar horarios cuando cambie el usuario o la fecha
             $('#id_usuario, #id_fecha').change(function() {
                 actualizarHorariosDisponibles();
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Inicializa Select2 en todos los selects con la clase 'select2'
+            $('.select2').select2({
+                placeholder: 'Seleccione una opción',
+                allowClear: true,
+                width: '100%'
+            });
+    
+            // Función para actualizar los médicos disponibles
+            function actualizarMedicosDisponibles() {
+                var areaId = $('#id_area').val();  // Obtiene el ID del área seleccionado
+    
+                if (areaId) {
+                    $.ajax({
+                        url: '{% url "obtener_medicos" %}',  // URL para la solicitud AJAX
+                        data: {
+                            area_id: areaId
+                        },
+                        success: function(data) {
+                            var medicoSelect = $('#id_usuario');  // Selecciona el campo de médicos
+                            medicoSelect.empty();  // Limpia las opciones actuales
+                            medicoSelect.append('<option value="">---------</option>');  // Agrega una opción por defecto
+                            // Agrega las nuevas opciones basadas en la respuesta AJAX
+                            data.medicos.forEach(function(medico) {
+                                medicoSelect.append('<option value="' + medico[0] + '">' + medico[1] + '</option>');
+                            });
+                            medicoSelect.trigger('change');  // Actualiza Select2
+                        }
+                    });
+                } else {
+                    var medicoSelect = $('#id_usuario');
+                    medicoSelect.empty().append('<option value="">---------</option>');
+                    medicoSelect.trigger('change');  // Actualiza Select2
+                }
+            }
+    
+            // Llama a la función para actualizar médicos cuando cambie el área
+            $('#id_area').change(function() {
+                actualizarMedicosDisponibles();
             });
         });
     </script>

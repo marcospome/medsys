@@ -4,6 +4,7 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import TurnoForm
 from .models import Turno
+from apps.base.models import Area
 from apps.socio.models import Paciente
 from django.contrib.auth.models import User, Group
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -36,39 +37,64 @@ def role_required(roles):
         return _wrapped_view
     return decorator
 
+# ---------------------------------------------------- ¡¡¡¡VISTA DE CREACIÓN DE TURNOS!!!! -----------------------------------------------------------------------------
+
 class CrearTurnoView(LoginRequiredMixin, View):
     template_name = 'turno/crear_turno.html'
     form_class = TurnoForm
 
     @method_decorator(role_required(['Administrativo', 'Super Administrativo']))
     def get(self, request):
-        area = request.GET.get('area', 'CG')  # Default to 'Consulta General'
-        medicos = self.get_medicos_por_area(area)
-        form = self.form_class(initial={'area': area}, medicos=medicos)
-        return render(request, self.template_name, {'form': form, 'area': area})
+        areas = Area.objects.all()  # Obtiene todas las áreas
+        area_id = request.GET.get('area')
+        if area_id:
+            try:
+                area = Area.objects.get(id=area_id)
+            except Area.DoesNotExist:
+                area = None
+        else:
+            area = None
+        
+        medicos = self.get_medicos_por_area(area) if area else User.objects.none()
+        form = self.form_class(initial={'area': area.id if area else None}, medicos=medicos)
+        
+        return render(request, self.template_name, {'form': form, 'areas': areas, 'selected_area': area})
 
     def post(self, request):
-        area = request.POST.get('area', 'CG')
-        medicos = self.get_medicos_por_area(area)
+        area_id = request.POST.get('area')
+        try:
+            area = Area.objects.get(id=area_id)
+        except Area.DoesNotExist:
+            area = None
+        
+        medicos = self.get_medicos_por_area(area) if area else User.objects.none()
         form = self.form_class(request.POST, medicos=medicos)
         if form.is_valid():
             turno = form.save(commit=False)
             turno.responsable_de_carga = request.user
+            turno.area = area
             turno.save()
-            return redirect('turnos_list')  # Redirigir a la lista de turnos
-        return render(request, self.template_name, {'form': form, 'area': area})
+            return redirect('turnos_list')
+        
+        return render(request, self.template_name, {'form': form, 'areas': Area.objects.all(), 'selected_area': area})
 
     def get_medicos_por_area(self, area):
-        roles_por_area = {
-            'OD': 'Odontología',
-            'CG': 'Medico',
-            'PS': 'Psiquiatría',
-            'OT': 'Medico'  # Asumir un rol general para 'Otros'
-        }
-        rol = roles_por_area.get(area, 'Medico')
-        grupo = Group.objects.get(name=rol)
-        return User.objects.filter(groups=grupo)
+        return User.objects.filter(areas=area) if area else User.objects.none()
+    
+    def ajax_get_medicos(self, request):
+        area_id = request.GET.get('area')
+        try:
+            area = Area.objects.get(id=area_id)
+        except Area.DoesNotExist:
+            return JsonResponse({'medicos': []})
+        
+        medicos = self.get_medicos_por_area(area)
+        medicos_list = list(medicos.values_list('id', 'username'))  # Ajusta los campos según sea necesario
+        
+        return JsonResponse({'medicos': medicos_list})
 
+
+# ---------------------------------------------------------------------------------------------------------------------------------
 
 class ListaTurnosView(LoginRequiredMixin, View):
     template_name = 'turno/lista_turnos.html'
@@ -141,28 +167,42 @@ class ListaTurnosView(LoginRequiredMixin, View):
 
 
 
-class ObtenerHorariosDisponiblesView(LoginRequiredMixin, View):
+class ObtenerHorariosDisponiblesView(View):
     def get(self, request):
-        medico_id = request.GET.get('medico_id')
-        fecha = request.GET.get('fecha')
-        
-        if not medico_id or not fecha:
-            return JsonResponse({'error': 'Invalid parameters'}, status=400)
-        
-        fecha = parse_date(fecha)
-        
-        # Filtrar turnos activos que no están cancelados
-        horarios_ocupados = Turno.objects.filter(
-            fecha=fecha, 
-            usuario_id=medico_id, 
-            activo=True
-        ).exclude(estado='5').values_list('horario', flat=True)
-        
-        horarios_disponibles = [(horario, text) for horario, text in Turno.HORARIOS if horario not in horarios_ocupados]
-        
-        return JsonResponse({'horarios': horarios_disponibles})
+        try:
+            medico_id = request.GET.get('medico_id')
+            fecha = request.GET.get('fecha')
+            
+            if not medico_id or not fecha:
+                return JsonResponse({'error': 'Invalid parameters'}, status=400)
+            
+            fecha = parse_date(fecha)
+            
+            if not fecha:
+                return JsonResponse({'error': 'Invalid date format'}, status=400)
+            
+            # Filtrar turnos activos que no están cancelados
+            horarios_ocupados = Turno.objects.filter(
+                fecha=fecha, 
+                usuario_id=medico_id, 
+                activo=True
+            ).exclude(estado='5').values_list('horario', flat=True)
+            
+            horarios_disponibles = [(horario, text) for horario, text in Turno.HORARIOS if horario not in horarios_ocupados]
+            
+            return JsonResponse({'horarios': horarios_disponibles})
+        except Exception as e:
+            # Registrar el error para más detalles
+            print(f"Error: {e}")
+            return JsonResponse({'error': 'Internal Server Error'}, status=500)
     
 
+class ObtenerMedicosView(View):
+    def get(self, request, *args, **kwargs):
+        area_id = request.GET.get('area_id')
+        medicos = User.objects.filter(areas__id=area_id) if area_id else User.objects.none()
+        medicos_list = list(medicos.values_list('id', 'username'))  # Cambia 'username' por el campo que quieras mostrar
+        return JsonResponse({'medicos': medicos_list})
 
 
 class EditarTurnoView(LoginRequiredMixin, View):

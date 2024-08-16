@@ -76,7 +76,7 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
         # external url that opens in a new window (Permissions can be added)
         {"name": "Página de inicio", "url": "/", "new_window": False},
-        {"name": "Administración de turnos", "url": "/turno/lista-turnos/", "new_window": False},
+        {"name": "Administración de turnos", "url": "/turno/lista-turnos/", "new_window": True},
     ],
     "site_title": "MedicalSys",
     "site_header": "Library",

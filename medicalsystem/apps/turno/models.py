@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from apps.socio.models import Paciente
+from apps.base.models import Area
 from django.core.exceptions import ValidationError
 
 class Turno(models.Model):
@@ -60,14 +61,9 @@ class Turno(models.Model):
         ('5', 'Cancelado')
     )
 
-    AREAS = (
-        ('OD', 'Odontología'),
-        ('CG', 'Consulta General'),
-        ('PS', 'Psiquiatría'),
-        ('OT', 'Otros')
-    )
 
-    area = models.CharField(max_length=2, choices=AREAS, default='CG', verbose_name='Área')
+
+    area = models.ForeignKey(Area, on_delete=models.CASCADE) # Area la cual corresponde el turno
     fecha = models.DateField(verbose_name='Fecha del turno')
     horario = models.CharField(max_length=2, choices=HORARIOS, default='0', verbose_name='Horario del turno')
     observacion = models.CharField(max_length=300, blank=True)
