@@ -1,6 +1,7 @@
 from django import forms
 from .models import Turno
 from apps.socio.models import Paciente
+from apps.base.models import Area
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -43,6 +44,7 @@ class TurnoForm(forms.ModelForm):
 class FiltroTurnosForm(forms.Form):
     medico = forms.ModelChoiceField(queryset=User.objects.filter(groups__name='Medico'), required=False, label='Médico')
     socio = forms.ModelChoiceField(queryset=Paciente.objects.all(), required=False, label='Socio')
+    area = forms.ModelChoiceField(queryset=Area.objects.all(), required=False, label='Area')
     activo = forms.BooleanField(required=False, label='Activo')
 
 

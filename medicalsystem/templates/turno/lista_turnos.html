@@ -86,6 +86,15 @@
                     </select>
                 </div>
                 <div class="col-md-3">
+                    <label for="area" class="form-label">Filtrar por Área</label>
+                    <select id="area" name="area" class="form-select select2" style="width: 100%;">
+                        <option value="">Todas</option>
+                        {% for area in areas %}
+                            <option value="{{ area.id }}" {% if request.GET.area == area.id|stringformat:"s" %}selected{% endif %}>{{ area.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label for="medico" class="form-label">Filtrar por médico</label>
                     <select id="medico" name="medico" class="form-select select2" style="width: 100%;">
                         <option value="">Todos</option>
@@ -118,12 +127,13 @@
                 </div>
             </div>
         </form>
-
+        
         <div class="card">
             <div class="card-body">
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Área</th>
                             <th>Fecha</th>
                             <th>Horario</th>
                             <th>Paciente</th>
@@ -136,6 +146,7 @@
                     <tbody>
                         {% for turno in turnos %}
                             <tr>
+                                <td>{{ turno.area }}</td>
                                 <td>{{ turno.fecha }}</td>
                                 <td>{{ turno.get_horario_display }}</td>
                                 <td><a href="{% url 'detalle_paciente' turno.socio.credencial %}">{{ turno.socio }}</a></td>
@@ -201,7 +212,9 @@
 </nav>
 <div class="container mt-3 text-center">
     <a href="/admin/" class="btn btn-primary">Volver a la página principal</a>
+    <a href="{% url 'export_turnos_to_excel' %}?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if request.GET.area %}&area={{ request.GET.area }}{% endif %}" class="btn btn-success">Descargar en Excel</a>
 </div>
+
 
 
     </div>

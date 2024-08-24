@@ -1,6 +1,6 @@
 
 from django.urls import path
-from .views import CrearTurnoView, ListaTurnosView, ObtenerHorariosDisponiblesView, EditarTurnoView,ObtenerMedicosView
+from .views import CrearTurnoView, ListaTurnosView, ObtenerHorariosDisponiblesView, EditarTurnoView,ObtenerMedicosView,export_turnos_to_excel
 
 urlpatterns = [
     path('crear-turno/', CrearTurnoView.as_view(), name='crear_turno'),
@@ -8,5 +8,6 @@ urlpatterns = [
     path('lista-turnos/', ListaTurnosView.as_view(), name='turnos_list'),
     path('obtener-horarios/', ObtenerHorariosDisponiblesView.as_view(), name='obtener_horarios_disponibles'),
     path('obtener-medicos/', ObtenerMedicosView.as_view(), name='obtener_medicos'),
+    path('exportar-excel/', export_turnos_to_excel, name='export_turnos_to_excel'),
 
 ]

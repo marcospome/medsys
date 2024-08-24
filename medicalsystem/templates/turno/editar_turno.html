@@ -127,4 +127,47 @@
         validarFormulario();
     });
 </script>
+<script>
+    $(document).ready(function() {
+        // Inicializa Select2 en todos los selects con la clase 'select2'
+        $('.select2').select2({
+            placeholder: 'Seleccione una opción',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Función para actualizar los médicos disponibles
+        function actualizarMedicosDisponibles() {
+            var areaId = $('#id_area').val();  // Obtiene el ID del área seleccionado
+
+            if (areaId) {
+                $.ajax({
+                    url: '{% url "obtener_medicos" %}',  // URL para la solicitud AJAX
+                    data: {
+                        area_id: areaId
+                    },
+                    success: function(data) {
+                        var medicoSelect = $('#id_usuario');  // Selecciona el campo de médicos
+                        medicoSelect.empty();  // Limpia las opciones actuales
+                        medicoSelect.append('<option value="">---------</option>');  // Agrega una opción por defecto
+                        // Agrega las nuevas opciones basadas en la respuesta AJAX
+                        data.medicos.forEach(function(medico) {
+                            medicoSelect.append('<option value="' + medico[0] + '">' + medico[1] + '</option>');
+                        });
+                        medicoSelect.trigger('change');  // Actualiza Select2
+                    }
+                });
+            } else {
+                var medicoSelect = $('#id_usuario');
+                medicoSelect.empty().append('<option value="">---------</option>');
+                medicoSelect.trigger('change');  // Actualiza Select2
+            }
+        }
+
+        // Llama a la función para actualizar médicos cuando cambie el área
+        $('#id_area').change(function() {
+            actualizarMedicosDisponibles();
+        });
+    });
+</script>
 </html>

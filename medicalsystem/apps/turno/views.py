@@ -15,6 +15,10 @@ from django.shortcuts import redirect
 from functools import wraps
 from django.utils.decorators import method_decorator
 from django.contrib import messages
+from django.http import HttpResponse
+from openpyxl import Workbook
+from django.utils.dateparse import parse_date
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -100,16 +104,17 @@ class ListaTurnosView(LoginRequiredMixin, View):
     template_name = 'turno/lista_turnos.html'
     paginate_by = 8  # Número de turnos por página
 
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get(self, request):
         user = request.user
+        areas = Area.objects.all()
         turnos = Turno.objects.all()
 
         # Filtrar turnos si el usuario es médico
         if user.groups.filter(name='Medico').exists():
             turnos = turnos.filter(usuario=user)
-        else:
-            def dispatch(self, *args, **kwargs):
-                return super().dispatch(*args, **kwargs)
 
         # Ordenar por fecha
         orden = request.GET.get('orden', 'asc')
@@ -117,6 +122,11 @@ class ListaTurnosView(LoginRequiredMixin, View):
             turnos = turnos.order_by('-fecha')
         else:
             turnos = turnos.order_by('fecha')
+
+        # Filtrar por área
+        area_id = request.GET.get('area', None)
+        if area_id:
+            turnos = turnos.filter(area__id=area_id)
 
         # Filtrar por médico
         medico_id = request.GET.get('medico', None)
@@ -151,8 +161,10 @@ class ListaTurnosView(LoginRequiredMixin, View):
             turnos_paginados = paginator.page(paginator.num_pages)
 
         context = {
+            'areas': areas,
             'turnos': turnos_paginados,
             'orden': orden,
+            'area_id': area_id,  # Agregar esta línea para manejar la selección de áreas
             'medico_id': medico_id,
             'socio_id': socio_id,
             'estado': estado,
@@ -160,11 +172,13 @@ class ListaTurnosView(LoginRequiredMixin, View):
             'medicos': medicos,
             'socios': socios,
             'page_obj': turnos_paginados,
-            'is_medico': user.groups.filter(name='Medico').exists()  # Agregar la variable de contexto
+            'is_medico': user.groups.filter(name='Medico').exists()  # Esto es suficiente
         }
         return render(request, self.template_name, context)
 
 
+
+# --------------------------------------- LOGICA PARA FILTRAR ENTRE HORARIOS DISPONIBLES Y OCUPADOS ---------------------------------------------------------------------------
 
 
 class ObtenerHorariosDisponiblesView(View):
@@ -205,6 +219,9 @@ class ObtenerMedicosView(View):
         return JsonResponse({'medicos': medicos_list})
 
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 class EditarTurnoView(LoginRequiredMixin, View):
     
     template_name = 'turno/editar_turno.html'
@@ -227,3 +244,66 @@ class EditarTurnoView(LoginRequiredMixin, View):
             form.save()
             return redirect('turnos_list')  # Redirigir a la lista de turnos
         return render(request, self.template_name, {'form': form, 'turno': turno, 'estado_turno': turno.estado})
+    
+
+
+
+
+# ------------------------------------------------------------ EXPORTANCIÓN A EXCEL DE TURNOS -----------------------------------------------------------------------------
+
+
+@login_required
+
+def export_turnos_to_excel(request):
+    # Obtener los filtros aplicados desde la request
+    orden = request.GET.get('orden', 'asc')
+    medico_id = request.GET.get('medico', None)
+    socio_id = request.GET.get('socio', None)
+    estado = request.GET.get('estado', None)
+    area_id = request.GET.get('area', None)
+
+    turnos = Turno.objects.all()
+
+    if medico_id:
+        turnos = turnos.filter(usuario__id=medico_id)
+    if socio_id:
+        turnos = turnos.filter(socio__credencial=socio_id)
+    if estado:
+        turnos = turnos.filter(estado=estado)
+    if area_id:
+        turnos = turnos.filter(area_id=area_id)
+
+    if orden == 'desc':
+        turnos = turnos.order_by('-fecha')
+    else:
+        turnos = turnos.order_by('fecha')
+
+    # Crear un archivo de Excel en memoria
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Turnos"
+
+    # Escribir los encabezados
+    ws.append(["Área", "Fecha", "Horario", "Paciente", "Responsable de Carga", "Médico Asignado", "Estado"])
+
+    # Escribir los datos de los turnos
+    for turno in turnos:
+        ws.append([
+            turno.area.nombre,
+            turno.fecha.strftime("%Y-%m-%d"),
+            turno.get_horario_display(),
+            f"{turno.socio.apellidos} {turno.socio.nombres}, DNI: {turno.socio.dni}",
+            f"{turno.responsable_de_carga.first_name} {turno.responsable_de_carga.last_name}",
+            f"{turno.usuario.first_name} {turno.usuario.last_name}",
+            turno.get_estado_display()
+        ])
+
+    # Preparar la respuesta HTTP con el archivo Excel
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response['Content-Disposition'] = 'attachment; filename=turnos.xlsx'
+    wb.save(response)
+    return response
+
+
+
+
