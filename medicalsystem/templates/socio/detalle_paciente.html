@@ -92,13 +92,14 @@
             <div class="card-body">
                 {% for historial in historiales %}
                     <div class="border-bottom mb-3 pb-3">
+                        <h3>Área {{ historial.area.nombre }}</h3>
                         <h4>Motivo de Consulta: {{ historial.motivo }}</h4>
                         <p><strong>Fecha de carga:</strong> {{ historial.fecha }}</p>
                         <p><strong>Antecedentes Familiares:</strong> {{ historial.antecedentefamiliar }}</p>
                         <p><strong>Enfermedad Actual:</strong> {{ historial.enfermedad }}</p>
                         <p><strong>Indicación:</strong> {{ historial.indicacion }}</p>
                         <p><strong>Problema:</strong> {{ historial.problema }}</p>
-                        <p><strong>Detalle:</strong> {{ historial.Detalle }}</p>
+                        <p><strong>Detalle:</strong> {{ historial.detalle }}</p>
                         <p><strong>Médico Responsable:</strong> {{ historial.usuario }}</p>
                     </div>
                 {% endfor %}

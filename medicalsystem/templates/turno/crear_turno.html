@@ -70,6 +70,12 @@
             right: 20px;
             z-index: 1000;
         }
+        
+        .char-counter {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -93,10 +99,11 @@
                 {{ form.fecha }}
             </div>
             
-            <!-- Campo para observaciones -->
+            <!-- Campo para observaciones con contador de caracteres -->
             <div class="form-group">
                 {{ form.observacion.label_tag }}
                 {{ form.observacion }}
+                <div id="charCounter" class="char-counter">0 / 300 caracteres</div>
             </div>
             
             <!-- Campo para seleccionar el socio con Select2 -->
@@ -177,6 +184,16 @@
             // Llama a la función para actualizar horarios cuando cambie el usuario o la fecha
             $('#id_usuario, #id_fecha').change(function() {
                 actualizarHorariosDisponibles();
+            });
+
+            // Contador de caracteres para el campo de observación
+            var observacionInput = $('#id_observacion');
+            var charCounter = $('#charCounter');
+            var maxLength = 300;
+
+            observacionInput.on('input', function() {
+                var currentLength = observacionInput.val().length;
+                charCounter.text(currentLength + ' / ' + maxLength + ' caracteres');
             });
         });
     </script>

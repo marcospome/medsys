@@ -1,5 +1,3 @@
-<!-- historialclinico/crearhistorial.html -->
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,14 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #f8f9fa; /* Color de fondo */
+            background-color: #f8f9fa;
         }
         .container {
             width: 100%;
             max-width: 800px;
             padding: 30px;
             margin: 0 auto;
-            background-color: #ffffff; /* Fondo del formulario */
+            background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -24,7 +22,7 @@
             text-align: center;
             margin-bottom: 30px;
             font-size: 24px;
-            color: #343a40; /* Color del título */
+            color: #343a40;
         }
         .btn-primary, .btn-secondary {
             width: 100%;
@@ -33,27 +31,32 @@
         }
         .btn-cancelar {
             margin-top: 10px;
-            background-color: #6c757d; /* Color de fondo del botón Cancelar */
-            border-color: #6c757d; /* Color del borde del botón Cancelar */
+            background-color: #6c757d;
+            border-color: #6c757d;
         }
         .btn-cancelar:hover {
-            background-color: #5a6268; /* Color de fondo del botón Cancelar al pasar el mouse */
-            border-color: #5a6268; /* Color del borde del botón Cancelar al pasar el mouse */
+            background-color: #5a6268;
+            border-color: #5a6268;
         }
         .form-group {
             margin-bottom: 20px;
         }
         .form-group label {
             font-weight: bold;
-            color: #495057; /* Color de las etiquetas de campo */
+            color: #495057;
         }
         .form-control {
-            border: 1px solid #ced4da; /* Borde del campo */
-            border-radius: 8px; /* Bordes redondeados */
-            padding: 15px; /* Espaciado interno */
-            width: 100%; /* Ancho completo del campo */
-            font-size: 16px; /* Tamaño de fuente */
-            resize: vertical; /* Permite redimensionar verticalmente */
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 15px;
+            width: 100%;
+            font-size: 16px;
+            resize: vertical;
+        }
+        .char-counter {
+            font-size: 14px;
+            color: #6c757d;
+            text-align: right;
         }
     </style>
 </head>
@@ -67,34 +70,55 @@
                 {{ form.area.label_tag }}
                 {{ form.area }}
             </div>
+
+            <!-- Repetir para cada textarea -->
             <div class="form-group">
                 <label for="id_motivo">Motivo de consulta</label>
-                <textarea name="motivo" id="id_motivo" class="form-control"></textarea>
+                <textarea name="motivo" id="id_motivo" class="form-control" maxlength="500" oninput="updateCounter(this, 'motivo-counter', 500)"></textarea>
+                <div id="motivo-counter" class="char-counter">0 / 500 caracteres</div>
             </div>
             <div class="form-group">
                 <label for="id_antecedentefamiliar">Antecedentes Familiares</label>
-                <textarea name="antecedentefamiliar" id="id_antecedentefamiliar" class="form-control"></textarea>
+                <textarea name="antecedentefamiliar" id="id_antecedentefamiliar" class="form-control" maxlength="1000" oninput="updateCounter(this, 'antecedentefamiliar-counter', 1000)"></textarea>
+                <div id="antecedentefamiliar-counter" class="char-counter">0 / 1000 caracteres</div>
             </div>
             <div class="form-group">
                 <label for="id_enfermedad">Enfermedad Actual</label>
-                <textarea name="enfermedad" id="id_enfermedad" class="form-control"></textarea>
+                <textarea name="enfermedad" id="id_enfermedad" class="form-control" maxlength="1000" oninput="updateCounter(this, 'enfermedad-counter', 1000)"></textarea>
+                <div id="enfermedad-counter" class="char-counter">0 / 1000 caracteres</div>
             </div>
             <div class="form-group">
                 <label for="id_indicacion">Indicación</label>
-                <textarea name="indicacion" id="id_indicacion" class="form-control"></textarea>
+                <textarea name="indicacion" id="id_indicacion" class="form-control" maxlength="1000" oninput="updateCounter(this, 'indicacion-counter', 1000)"></textarea>
+                <div id="indicacion-counter" class="char-counter">0 / 1000 caracteres</div>
             </div>
             <div class="form-group">
                 <label for="id_problema">Problema</label>
-                <textarea name="problema" id="id_problema" class="form-control"></textarea>
+                <textarea name="problema" id="id_problema" class="form-control" maxlength="1000" oninput="updateCounter(this, 'problema-counter', 1000)"></textarea>
+                <div id="problema-counter" class="char-counter">0 / 1000 caracteres</div>
             </div>
             <div class="form-group">
                 <label for="id_detalle">Detalle</label>
-                <textarea name="detalle" id="id_detalle" class="form-control"></textarea>
+                <textarea name="detalle" id="id_detalle" class="form-control" maxlength="1000" oninput="updateCounter(this, 'detalle-counter', 1000)"></textarea>
+                <div id="detalle-counter" class="char-counter">0 / 1000 caracteres</div>
             </div>
+            <!-- Fin repetición -->
+
             <button type="submit" class="btn btn-primary">Guardar Historial Clínico</button>
             <a href="{% url 'turnos_list' %}" class="btn btn-secondary btn-cancelar">Cancelar</a>
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateCounter(textarea, counterId, maxLength) {
+            const counter = document.getElementById(counterId);
+            const currentLength = textarea.value.length;
+            counter.textContent = `${currentLength} / ${maxLength} caracteres`;
+
+            if (currentLength >= maxLength) {
+                textarea.value = textarea.value.substring(0, maxLength);
+            }
+        }
+    </script>
 </body>
 </html>
