@@ -2,6 +2,8 @@ from django.urls import path, include
 from . import views
 from django.conf import settings
 from django.contrib.auth import views as auth_views
+from .views import custom_403_view
+
 
 
 urlpatterns = [
@@ -11,6 +13,7 @@ urlpatterns = [
     path('turno/', include('apps.turno.urls')),
     path('socio/', include('apps.socio.urls')),
     path('historiaclinica/', include('apps.historialesclinicos.urls')),
+    path('test-403/', custom_403_view, name='custom_403'),
 
 ]
 

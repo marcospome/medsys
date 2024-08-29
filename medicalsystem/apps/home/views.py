@@ -5,6 +5,20 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
+from django.http import HttpResponseForbidden, Http404
+
+# ---------------------------- MANEJO DE ERRORES ---------------------------
+def custom_500_view(request):
+    return render(request, 'base/500.html', status=500)
+
+def custom_404_view(request, exception=None):
+    return render(request, 'base/404.html', status=404)
+
+def custom_403_view(request):
+    return HttpResponseForbidden()
+
+# -------------------------------------------------------------------------
+
 
 
 class IndexView(TemplateView):

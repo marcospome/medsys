@@ -172,7 +172,9 @@ class ListaTurnosView(LoginRequiredMixin, View):
             'medicos': medicos,
             'socios': socios,
             'page_obj': turnos_paginados,
-            'is_medico': user.groups.filter(name='Medico').exists()  # Esto es suficiente
+            'is_medico': user.groups.filter(name='Medico').exists(),  # Levanta todos los usuarios con el grupo Medico.
+            'is_administrativo': user.groups.filter(name='Administrativo').exists(),  # Levanta todos los usuarios con el grupo Administrativo.
+            'is_superadmin': user.groups.filter(name='Super Administrativo').exists()  # Levanta todos los usuarios con el grupo Super Administrativo.
         }
         return render(request, self.template_name, context)
 

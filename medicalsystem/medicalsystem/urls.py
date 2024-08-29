@@ -17,7 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, reverse_lazy
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
+from apps.home.views import custom_404_view, custom_500_view
 
+# Configuración para manejar el error 404, 500 y 403.
+handler404 = custom_404_view
+handler500 = custom_500_view
+
+handler403 = TemplateView.as_view(template_name='base/403.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

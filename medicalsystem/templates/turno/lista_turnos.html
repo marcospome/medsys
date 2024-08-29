@@ -71,7 +71,7 @@
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">Administración de Turnos</h1>
-        {% if not is_medico %}
+        {% if is_administrativo or is_superadmin %}
         <a href="/turno/crear-turno/" class="btn btn-success btn-agregar-turno">Agregar Turno</a>
         {% endif %}
 
@@ -140,7 +140,9 @@
                             <th>Responsable de Carga</th>
                             <th>Médico Asignado</th>
                             <th>Estado</th>
+                            {% if is_administrativo or is_superadmin %}
                             <th>Acciones</th> <!-- Nueva columna para el ícono de edición -->
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -158,9 +160,9 @@
                                     </div>
                                 </td>
                                 <td>
-                                    {% if not is_medico %}
+                                    {% if is_administrativo or is_superadmin %}
                                         <a href="{% url 'editar_turno' turno.pk %}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-pencil-alt"></i>
+                                            <i class="fas fa-pencil-alt"></i> Editar
                                         </a>
                                     {% endif %}
                                     {% if is_medico and turno.estado  not in '1,2,3,5'%}
@@ -212,7 +214,9 @@
 </nav>
 <div class="container mt-3 text-center">
     <a href="/admin/" class="btn btn-primary">Volver a la página principal</a>
+    {% if not is_medico %}
     <a href="{% url 'export_turnos_to_excel' %}?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if request.GET.area %}&area={{ request.GET.area }}{% endif %}" class="btn btn-success">Descargar en Excel</a>
+    {% endif %}
 </div>
 
 
