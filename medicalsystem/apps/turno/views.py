@@ -10,14 +10,11 @@ from django.contrib.auth.models import User, Group
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.utils.dateparse import parse_date
-from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import redirect
 from functools import wraps
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.http import HttpResponse
 from openpyxl import Workbook
-from django.utils.dateparse import parse_date
 from django.contrib.auth.decorators import login_required
 
 
@@ -93,7 +90,7 @@ class CrearTurnoView(LoginRequiredMixin, View):
             return JsonResponse({'medicos': []})
         
         medicos = self.get_medicos_por_area(area)
-        medicos_list = list(medicos.values_list('id', 'username'))  # Ajusta los campos según sea necesario
+        medicos_list = list(medicos.values_list('id', 'username'))  
         
         return JsonResponse({'medicos': medicos_list})
 
@@ -164,7 +161,7 @@ class ListaTurnosView(LoginRequiredMixin, View):
             'areas': areas,
             'turnos': turnos_paginados,
             'orden': orden,
-            'area_id': area_id,  # Agregar esta línea para manejar la selección de áreas
+            'area_id': area_id,  
             'medico_id': medico_id,
             'socio_id': socio_id,
             'estado': estado,
@@ -217,7 +214,7 @@ class ObtenerMedicosView(View):
     def get(self, request, *args, **kwargs):
         area_id = request.GET.get('area_id')
         medicos = User.objects.filter(areas__id=area_id) if area_id else User.objects.none()
-        medicos_list = list(medicos.values_list('id', 'username'))  # Cambia 'username' por el campo que quieras mostrar
+        medicos_list = list(medicos.values_list('id', 'username'))  
         return JsonResponse({'medicos': medicos_list})
 
 
