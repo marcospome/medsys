@@ -99,7 +99,7 @@ class CrearTurnoView(LoginRequiredMixin, View):
 
 class ListaTurnosView(LoginRequiredMixin, View):
     template_name = 'turno/lista_turnos.html'
-    paginate_by = 8  # Número de turnos por página
+    paginate_by = 5  # Número de turnos por página
 
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -109,9 +109,14 @@ class ListaTurnosView(LoginRequiredMixin, View):
         areas = Area.objects.all()
         turnos = Turno.objects.all()
 
-        # Filtrar turnos si el usuario es médico
-        if user.groups.filter(name='Medico').exists():
+        # Filtrar turnos unicamente por los que tiene el medico.
+        if user.groups.filter(name='Medico').exists() and user.groups.count() == 1: # Que sea medico y unicamente medico (si tiene más de un rol no valida.)
             turnos = turnos.filter(usuario=user)
+
+        # Filtrar turnos si el usuario es médico, mostrando solo los confirmados
+        if user.groups.filter(name='Medico').exists() and user.groups.count() == 1: # Que sea medico y unicamente medico (si tiene más de un rol no valida.)
+            turnos = turnos.filter(usuario=user, estado='4') 
+
 
         # Ordenar por fecha
         orden = request.GET.get('orden', 'asc')

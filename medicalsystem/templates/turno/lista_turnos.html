@@ -11,15 +11,69 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        .container {
-            position: relative;
+        
+        body {
+            box-shadow: none;
+            background-color: #E9E3D5;
+            background-size: cover;
+            background-position: center;
+            font: Arial, Helvetica, sans-serif;
+            color: #333333;
         }
+        
+
+        h1 {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #208c2f;
+            font-size: 65px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        
+        /*Container externo, sin tomar el btn de Volver y Descarga Excel*/
+        .mt-5 {
+            border: 2px solid #0d6c0d;
+            border-radius: 14px;
+            opacity: calc(89%);
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 23px;
+            
+        }
+        
+        .mt-3{
+            gap: 12px;
+            border-radius: 16px;
+            margin-top: 10px;
+            justify-content: space-evenly;
+        }
+        
+        .btn-primary{
+            border-radius: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
         .btn-agregar-turno {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+            border-radius: 16px;
+            background-color: #28a745;
+            font-family: Arial, Helvetica, sans-serif;
+            width: 140px;
+            height: 39px;
+            position:relative;
+            transition: background-color 0.3s ease;
+            margin: 11px;
         }
+        
+        .btn-agregar-turno:hover {
+            background-color: #218838;
+        }
+        
+        .btn-success{
+            border-radius: 16px;
+        }
+
         .check {
             font-size: 1.5em;
         }
@@ -27,15 +81,35 @@
             color: green;
         }
         .check-red {
-            color: red;
+            color: rgb(165, 39, 39);
+            
         }
+
+            /*Estilo para los filtros*/
+
         .filters {
-            margin-bottom: 20px;
+            background-color: #EBE6E0;
+            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
+        .filters label {
+            font-weight: 600;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #495057;
+        }
+
+        .filters .form-select {
+            border-radius: 10px;
+            border: 2px solid #4f8a60;
+        }
+
         /* Estilo para select2 similar a form-select */
         .select2-container--default .select2-selection--single {
-            border: 1px solid #ced4da; /* Color del borde */
-            border-radius: .25rem; /* Borde redondeado */
+            border: 2px solid #4f8a60; /* Color del borde */
+            border-radius: 10px; /* Borde redondeado */
             height: calc(2.25rem + 2px); /* Altura similar */
             padding: .375rem .75rem; /* Espaciado interno similar */
         }
@@ -44,36 +118,173 @@
         }
         /* Estilo para los estados de los turnos */
         .estado-container {
-            display: inline-block;
-            padding: 5px 10px; /* Espaciado interno del botón */
-            border-radius: 5px; /* Borde redondeado del botón */
+            text-align: center;
+            display: grid;
+            padding: 10px 15px; /* Espaciado interno del botón */
+            border-radius: 10px; /* Borde redondeado del botón */
+            min-width: 120px;
         }
         .estado-pendiente {
-            background-color: pink; /* Color del estado "Pendiente de Confirmación" */
+            font-family:Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            background-color: rgb(211, 156, 165); /* Color del estado "Pendiente de Confirmación" */
+            vertical-align: middle;
         }
         .estado-atendido {
+            color:beige;
+            font-weight: bold;
+            font-family:Arial, Helvetica, sans-serif;
             background-color: #008000; /* Color del estado "Atendido" */
         }
         .estado-ausente-aviso {
+            font-family:Arial, Helvetica, sans-serif;
+            font-weight: bold;
             background-color: #d3d610; /* Color del estado "Ausente con aviso" */
         }
         .estado-ausente-sin-aviso {
+            font-family:Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            color: beige;
             background-color: #438f9c; /* Color del estado "Ausente sin aviso" */
         }
         .estado-confirmado {
+            font-family:Arial, Helvetica, sans-serif;
+            font-weight: bold;
             background-color: #ffa733; /* Color del estado "Confirmado" */
         }
         .estado-cancelado {
+            font-family:Arial, Helvetica, sans-serif;
+            color: beige;
+            font-weight: bold;
             background-color: #FF0000; /* Color del estado "Cancelado" */
         }
+        /* Consulta de medios para pantallas de 650px o menos */
+        @media (max-width: 650px) {
+            
+            body{
+                font-size: 14px;
+                background-size: cover;
+                background-position: center;
+                font-family: Arial, Helvetica, sans-serif;
+                height: 100lvw;
+                width: 100lvw;
+            }
+
+            h1 {
+                font-size: 36px;
+                text-align: center;
+                font-weight: bold;
+
+                margin-bottom: 20px;
+            }
+
+            .card {
+                max-width: 90%; /* Ocupar el 100% del ancho de la pantalla */
+                margin: 20px auto;
+                padding: 15px; /* Reduce el padding en pantallas más pequeñas */
+                font-size: 14px; /* Ajuste de tamaño de fuente para mantener la legibilidad */
+            }
+            .mt-5 {
+                padding: 15px;
+                max-width: 90%;
+                text-align: left;
+            }
+
+            .mt-3{
+                text-align: center;
+            }
+
+            .btn-primary,
+            .btn-success,
+            .btn-agregar-turno {
+                width: 100%;
+                font-size: 14px;
+                margin-bottom: 10px;
+                margin: 11px;
+                height: auto; /* Ajuste dinámico de la altura del botón */
+            }
+            
+            /* Ajustes en los filtros */
+            .filters {
+                padding: 15px;
+                font-size: 14px;
+            }
+            
+
+            .filters {
+                display: block;
+                padding: 10px;
+            }
+
+            .filters .form-select {
+                width: 100%;
+                margin-bottom: 10px;
+                font-size: 14px;
+            }
+
+
+            .filters .row{
+                display: block;
+            }
+
+            .filters .col-md-3{
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            /*Ajuste de la tabla*/
+            .table {
+                display:flex;
+                margin-top: auto;
+                justify-content: center;
+                align-items: center;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            /*Secciones del turno, como area, fecha, horario*/
+            .table th {
+                display: none;
+                font-size: 16px; /* Reducir tamaño de fuente */
+                padding: 5px; /* Reducir padding */
+                text-align: center; /* Alineación del texto a la izquierda */
+            }
+
+            .table tbody tr {
+                display:block;
+                text-align: center;
+                margin-bottom: 30px;
+                border:1px solid #dae3d9;
+                padding: 15px;
+            }
+
+            .table tbody td{
+                display: flex;
+                justify-content: space-between;
+            }
+
+
+            /* Ajuste de los estados */
+            .estado-container{
+                font-size: 12px;
+                padding:8px 10px ;
+                min-width: auto;
+            }
+            .estado-container, .check, .estado-pendiente, .estado-atendido, .estado-ausente-aviso, .estado-ausente-sin-aviso, .estado-confirmado, .estado-cancelado {
+                display: block; /* Mostrar elementos en forma de bloque */
+                width: auto;    /* Adaptar el ancho del contenido */
+                text-align: center; /* Centrar el texto */
+            }
+            .check {
+                font-size: 1em;
+            }
+        
+
+        }        
     </style>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">Administración de Turnos</h1>
-        {% if is_administrativo or is_superadmin %}
-        <a href="/turno/crear-turno/" class="btn btn-success btn-agregar-turno">Agregar Turno</a>
-        {% endif %}
 
         <!-- Filtros y Orden -->
         <form method="get" class="filters">
@@ -86,7 +297,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="area" class="form-label">Filtrar por Área</label>
+                    <label for="area" class="form-label">Área médica</label>
                     <select id="area" name="area" class="form-select select2" style="width: 100%;">
                         <option value="">Todas</option>
                         {% for area in areas %}
@@ -95,7 +306,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="medico" class="form-label">Filtrar por médico</label>
+                    <label for="medico" class="form-label">Médico</label>
                     <select id="medico" name="medico" class="form-select select2" style="width: 100%;">
                         <option value="">Todos</option>
                         {% for medico in medicos %}
@@ -104,7 +315,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="socio" class="form-label">Filtrar por socio</label>
+                    <label for="socio" class="form-label">Socio</label>
                     <select id="socio" name="socio" class="form-select select2" style="width: 100%;">
                         <option value="">Todos</option>
                         {% for socio in socios %}
@@ -113,7 +324,7 @@
                     </select>
                 </div>      
                 <div class="col-md-3">
-                    <label for="estado" class="form-label">Estado:</label>
+                    <label for="estado" class="form-label">Estado</label>
                     <select name="estado" id="estado" class="form-select">
                       <option value="">Todos</option>
                       {% for key, value in turno_estados %}
@@ -124,6 +335,9 @@
             <div class="row mt-3">
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+                {% if not is_medico %}
+                    <a href="/turno/crear-turno/" class="btn btn-success btn-agregar-turno">Agregar Turno</a>
+                {% endif %}
                 </div>
             </div>
         </form>
@@ -140,9 +354,7 @@
                             <th>Responsable de Carga</th>
                             <th>Médico Asignado</th>
                             <th>Estado</th>
-                            {% if is_administrativo or is_superadmin %}
                             <th>Acciones</th> <!-- Nueva columna para el ícono de edición -->
-                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -160,9 +372,9 @@
                                     </div>
                                 </td>
                                 <td>
-                                    {% if is_administrativo or is_superadmin %}
+                                    {% if not is_medico %}
                                         <a href="{% url 'editar_turno' turno.pk %}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-pencil-alt"></i> Editar
+                                            <i class="fas fa-pencil-alt"></i>
                                         </a>
                                     {% endif %}
                                     {% if is_medico and turno.estado  not in '1,2,3,5'%}

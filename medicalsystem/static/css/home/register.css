@@ -1,52 +1,157 @@
+/* Definición de Variables para el Modo Claro */
+:root {
+    --background-color: #f1f1f1;
+    --text-color: #5d5d5d;
+    --button-bg: #525252;
+    --button-hover-bg: #7f7f7f;
+    --footer-bg: #00420f;
+    --footer-text-color: #ffffff;
+    --cover-bg: #f1f1f1;
+}
+
+/* Modo Claro */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Botón para cambiar el tema */
+button#theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre el texto y los íconos */
+}
+
+/* Estilo para el texto dentro del botón */
+button#theme-toggle .button-text {
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+/* Estilo para los íconos */
+button#theme-toggle i {
+    font-size: 18px;
+    color: #fff;
+}
+
+/* Muestra el ícono adecuado según el tema actual */
+body[data-theme='dark'] #icon-sun {
+    display: none;
+}
+
+body[data-theme='light'] #icon-moon {
+    display: none;
+}
+
+/* Definición de Variables para el Modo Oscuro */
+body[data-theme='dark'] {
+    --background-color: #202020;
+    --text-color: #ffffff;
+    --button-bg: #807f7f;
+    --button-hover-bg: #555555;
+    --footer-bg: #00420f;
+    --footer-text-color: #ffffff;
+    --cover-bg: #202020;
+}
+
+/* Aplicar Modo Oscuro */
+body[data-theme='dark'] {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Otras reglas CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    color: inherit; /* Asegúrate de que todos los elementos hereden el color del texto del body */
+}
+
+/* Estilos por defecto (modo claro) */
 body {
     margin: 0;
     padding: 0;
     line-height: 1;
-    background: linear-gradient(246deg, #6975B0 21.76%, #F26666 83.41%);
+    background-image: url('/static/img/bg/back-clear.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     height: 100vh;
-    color: #2F589F;
+    color: #1c6cf7;
     text-align: center;
-    font-family: Leelawadee;
- 
+    font-family: 'Poppins', sans-serif;
 }
-.formulario{
-    margin-top: 20px;
+
+/* Estilos del formulario */
+.formulario {
+    min-height: 580px;
+    margin-top: 80px;
     position: absolute;
     top: 40%;
+    bottom:-60px;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px;
+    width: 350px;
     background: white;
-    border-radius: 15px;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
 }
-.formulario h1{
+
+.formulario h1 {
     text-align: center;
-    padding: 0 0 20px 0;
-    color: #315ca5;
-    text-align: center;
-    font-family: Leelawadee;
-    font-size: 25px;
+    padding: -40px 0 20px 0;
+    color: #202020;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
     font-style: normal;
     font-weight: normal;
     line-height: normal;
     margin-bottom: 10px;
 }
-.formulario form{
-    padding: 0 40px;
+
+.formulario form {
+    padding: 0px 44px;
     box-sizing: border-box;
 }
-img {
-    width: 90px; 
-    height: auto; 
-    display: block; 
-    margin: 0 auto;
+
+.formulario p a {
+    color: #8e02c5; /* Color amarillo */
+    text-decoration: none; /* Quita el subrayado si no lo quieres */
 }
-.formulario .username{
+
+.formulario p a:hover {
+    color: #6307a0; /* Color amarillo más oscuro al hacer hover */
+}
+
+
+img {
+    width: 90px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    margin-top: -70px;
+}
+
+/* Estilos para el contenedor del campo de usuario */
+.formulario .username {
     position: relative;
-    border-bottom:2px solid #adadad;
+    border-bottom: 2px solid #adadad;
     margin: 30px 0;
 }
-.username input{
+
+.username input {
     width: 100%;
     padding: 0 5px;
     height: 40px;
@@ -55,40 +160,43 @@ img {
     background: none;
     outline: none;
 }
-.username label{
-    position:absolute;
-    top: 10%;
-    left: 130px;
+
+.username label {
+    position: absolute;
+    top: 10%; /* Centra verticalmente */
+    left: 100px; /* Ajusta la posición horizontal si es necesario */
+    transform: translateY(-50%); /* Ajusta la posición vertical */
     color: silver;
-    transform: translateY(-50%);
     font-size: 16px;
     pointer-events: none;
 }
-.username span::before{
+
+.username span::before {
     content: " ";
     position: absolute;
     top: 40px;
     left: 0;
     width: 100%;
     height: 2px;
-    background: #6c3483;
+    background: #4d3f32;
     transition: 0.5s;
 }
-.username input:focus~label,
-.username input:focus~label{
+
+.username input:focus ~ label {
     top: -5px;
-    color: #6c3483;
+    color: #4d3f32;
     transition: color 0.5s;
 }
-.username input:focus~span::before,
-.username input:focus~span::before{
-    width:100%
+
+.username input:focus ~ span::before {
+    width: 100%;
 }
+
+/* Estilos para el contenedor del campo de contraseña */
 .formulario .contrasena {
     position: relative;
     border-bottom: 2px solid #adadad;
     margin: 30px 0;
-    text-align: center; /* Centra el contenido horizontalmente */
 }
 
 .contrasena input {
@@ -99,84 +207,61 @@ img {
     border: none;
     background: none;
     outline: none;
-    display: block;
-    margin: 0 auto; /* Centra el input horizontalmente */
 }
-.contrasena label{
-    position:absolute;
-    top: 10%;
-    left: 120px;
+
+.contrasena label {
+    position: absolute;
+    top: 10%; /* Centra verticalmente */
+    left: 90px; /* Ajusta la posición horizontal si es necesario */
+    transform: translateY(-50%); /* Ajusta la posición vertical */
     color: silver;
-    transform: translateY(-50%);
     font-size: 16px;
     pointer-events: none;
 }
 
-.contrasena span::before{
+.contrasena span::before {
     content: " ";
     position: absolute;
     top: 40px;
     left: 0;
     width: 100%;
     height: 2px;
-    background: #6c3483;
-    transition: .5s;
+    background: #4d3f32;
+    transition: 0.5s;
 }
-.contrasena input:focus ~ label,
-.contrasena input:focus ~ label{
+
+.contrasena input:focus ~ label {
     top: -5px;
-    color: #6c3483;
+    color: #4d3f32;
     transition: color 0.5s;
 }
-.contrasena input:focus ~ span::before,
-.contrasena input:focus ~ span::before{
-    width:100%
-}
-input[type="submit"]{
-    width: 150px;
-    height: 50px;
-    border: 1px solid;
-    background: #4A6FF1;
-    border-radius: 15px;
-    font-size: 18px;
-    color: white;
-    cursor: pointer;
-    outline: none;
-}
-input[type="submit"]:hover{
-    border-color: white;
-    transition: .5s;
+
+.contrasena input:focus ~ span::before {
+    width: 100%;
 }
 
-input:-internal-autofill-selected {
-    background-color: initial !important; /* Restablece el color de fondo a su valor inicial*/
-    color: initial !important; /* Restablece el color del texto a su valor inicial */
-}
-
+/* Estilos para el contenedor del campo de confirmar contraseña */
 .formulario .confirm-contrasena {
     position: relative;
     border-bottom: 2px solid #adadad;
     margin: 30px 0;
-    text-align: center; /* Centra el contenido horizontalmente */
 }
 
 .confirm-contrasena input {
     width: 100%;
     padding: 0 5px;
-    height: 55px;
+    height: 40px;
     font-size: 14px;
     border: none;
     background: none;
     outline: none;
-    display: block;
-    margin: 0 auto; /* Centra el input horizontalmente */
 }
 
 .confirm-contrasena label {
     position: absolute;
-    top: 10%;
-    left: 50%; /* Centra el label horizontalmente */
-    transform: translateX(-50%); /* Centra el label horizontalmente */
+     top: 10%; /* Centra verticalmente */
+    left: 50px; /* Ajusta la posición horizontal si es necesario */
+    transform: translateY(-50%); /* Ajusta la posición vertical */
     color: silver;
     font-size: 16px;
     pointer-events: none;
@@ -189,19 +274,141 @@ input:-internal-autofill-selected {
     left: 0;
     width: 100%;
     height: 2px;
-    background: #6c3483;
+    background: #4d3f32;
     transition: 0.5s;
 }
 
-.confirm-contrasena input:focus ~ label,
 .confirm-contrasena input:focus ~ label {
     top: -5px;
-    color: #6c3483;
+    color: #4d3f32;
     transition: color 0.5s;
 }
 
-.confirm-contrasena input:focus ~ span::before,
 .confirm-contrasena input:focus ~ span::before {
     width: 100%;
 }
 
+/* Estilos del botón de submit */
+input[type="submit"] {
+    width: 150px;
+    height: 50px;
+    border: 1px solid;
+    background: #036419;
+    border-radius: 15px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    outline: none;
+}
+
+input[type="submit"]:hover {
+    border-color: white;
+    transition: 0.5s;
+}
+
+input:-internal-autofill-selected {
+    background-color: initial !important;
+    color: initial !important;
+}
+
+
+/* Estilos para el modo oscuro */
+body[data-theme='dark'] {
+    background-image: url('/static/img/bg/back-dark.png');
+    color: #f5f5f5;
+}
+
+body[data-theme='dark'] .formulario {
+    background: #383838;
+    color: #f5f5f5;
+}
+
+body[data-theme='dark'] .formulario h1 {
+    color: #f5f5f5;
+}
+
+body[data-theme='dark'] .username input,
+body[data-theme='dark'] .contrasena input {
+    border-bottom: 2px solid #555;
+}
+
+body[data-theme='dark'] input[type="submit"] {
+    background: #036419;
+    border-color: #777;
+}
+body[data-theme='dark'] .formulario p a {
+    color: #ffe600; /* Cambia el color del enlace para el modo oscuro */
+}
+
+body[data-theme='dark'] .formulario p a:hover {
+    color: #927908; /* Cambia el color del enlace al hacer hover en el modo oscuro */
+}
+
+/* Ajustes para pantallas de hasta 768px de ancho */
+/* Estilos para pantallas con un ancho máximo de 640px */
+@media screen and (max-width: 640px) {
+    /* Ajustar el botón de cambiar modo */
+    button#theme-toggle {
+        top: 10px; /* Menos espacio desde la parte superior */
+        right: 10px; /* Menos espacio desde el lado derecho */
+        padding: 8px 16px; /* Menor padding */
+        font-size: 12px; /* Tamaño de fuente más pequeño */
+    }
+
+    /* Ajustar el tamaño de fuente del texto dentro del botón */
+    button#theme-toggle .button-text {
+        font-size: 12px;
+        margin-right: 8px;
+    }
+
+    /* Ajustar el tamaño de los íconos dentro del botón */
+    button#theme-toggle i {
+        font-size: 16px;
+    }
+
+    /* Ajustar el formulario */
+    .formulario {
+        width: 90%; /* Hacer que el formulario ocupe el 90% del ancho */
+        max-width: 350px; /* Ancho máximo para no estirarse demasiado */
+        top: 20%; /* Ajustar la posición vertical */
+        bottom: 0; /* Eliminar el margen inferior */
+        transform: translate(-50%, -20%); /* Ajustar la transformación */
+    }
+
+    /* Ajustar el tamaño del título del formulario */
+    .formulario h1 {
+        font-size: 18px; /* Tamaño de fuente más pequeño */
+    }
+
+    /* Ajustar el padding del formulario */
+    .formulario form {
+        padding: 0 20px; /* Menos padding */
+    }
+
+    /* Ajustar el tamaño de la imagen */
+    img {
+        width: 70px; /* Tamaño de imagen más pequeño */
+        margin-top: -50px; /* Ajustar el margen superior */
+    }
+
+    /* Ajustar el posicionamiento y el tamaño de los campos de entrada y etiquetas */
+    .formulario .username,
+    .formulario .contrasena,
+    .formulario .confirm-contrasena {
+        margin: 20px 0; /* Menos margen vertical */
+    }
+
+    .username label,
+    .contrasena label,
+    .confirm-contrasena label {
+        left: 10px; /* Ajustar la posición horizontal */
+        font-size: 14px; /* Tamaño de fuente más pequeño */
+    }
+
+    /* Ajustar el tamaño del botón de enviar */
+    input[type="submit"] {
+        width: 100%; /* Hacer que el botón ocupe el 100% del ancho */
+        height: 45px; /* Ajustar la altura */
+        font-size: 16px; /* Tamaño de fuente más pequeño */
+    }
+}

@@ -3,32 +3,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mutual San José</title>
-    <link rel="icon" href="{% static 'img/base/icono.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    
+    <link rel="icon" href="{% static 'img/base/logomin.png' %}">
     <link rel="stylesheet" href="{% static 'css/home/index.css' %}">
-    <script src="https://kit.fontawesome.com/41bcea2ae3.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body>
     {% include 'base/header.html' %}
+    <button id="theme-toggle">
+        <span class="button-text">Modo</span>
+        <i class="fas fa-sun" id="icon-sun"></i>
+        <i class="fas fa-moon" id="icon-moon"></i>
+    </button>    
     <div class="container__cover">
         <div class="cover">
-            <div class="text">
-                <h1>Nosotros</h1>
-                <p>Esta obra de fe se enmarca dentro del trabajo que lleva adelante el Equipo de Sacerdotes de Villas y Barrios Populares de Capital y Gran Buenos Aires. Destinada a nuestros hermanos que más sufren, no sólo busca su felicidad sino la de todas las personas que tengan la necesidad de encontrarle el sentido a la vida, acercándose a este territorio bendito donde sólo Dios y la Virgen nunca han soltado la mano de las familias.</p>
+            <div class="content">
+                <img src="{% static 'img/base/logomutual.png' %}" class="image" alt="Logo Mutual">
+                <p>Creemos que amar es trabajar, es tiempo y esfuerzo en</p>
+                <p>búsqueda del <b>bien común.</b></p>
+            </div>
+            <div class="button-container">
+                <a href="/login" class="login-button">
+                    <input type="button" value="Iniciar Sesión">
+                </a>
                 <a href="https://lavozdesanjose.com.ar/nosotros/" target="_blank">
                     <input type="button" value="Ver Más">
                 </a>
             </div>
-            <div class="svg">
-                <img src="{% static 'img/base/logomutual.png' %}" alt="">
-            </div>
+        </div>
+        <div class="circle-image">
+            <img src="{% static 'img/carrusel/img1.jpg' %}" alt="Imagen Circular">
         </div>
     </div>
+    <footer>
+        Omega Consultora | 2024
+    </footer>
     <script src="{% static 'js/home/script.js' %}"></script>
 </body>
-<footer>
-    Sistema diseñado por Omega Consultora | 2023
-</footer>
 </html>
