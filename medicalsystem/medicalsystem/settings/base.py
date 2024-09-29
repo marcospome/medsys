@@ -73,6 +73,8 @@ TINYMCE_DEFAULT_CONFIG = {
 
 
 JAZZMIN_SETTINGS = {
+    "theme": "flatly",  # Tema predeterminado
+    "dark_mode_theme": "darkly",  # Tema oscuro
     "topmenu_links": [
         # external url that opens in a new window (Permissions can be added)
         {"name": "Página de inicio", "url": "/", "new_window": False},
@@ -155,7 +157,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = "es-ar"
+LANGUAGE_CODE = "es"
 
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
@@ -175,8 +177,10 @@ CKEDITOR_CONFIGS = {
 
 
 
-
-USE_L10N = False
+TIME_ZONE = 'America/Argentina/Buenos_Aires' 
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
 
 DATE_FORMAT = "%d/%m/%Y"
 

@@ -823,6 +823,10 @@ body.layout-navbar-fixed #jazzy-actions.sticky-top {
     top: 67px;
 }
 
+.navbar-light .navbar-nav .nav-link {
+    color: #007bff;
+}
+
 /* stacked inlines */
 a.inline-deletelink:hover {
     background-color: #c82333;
