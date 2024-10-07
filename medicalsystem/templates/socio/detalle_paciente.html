@@ -91,29 +91,89 @@
             </div>
             <div class="card-body">
                 {% if historiales %}
+                <form method="post" action="{% url 'generar_pdf' %}" id="formGenerarPdf">
+                    {% csrf_token %}
                     {% for historial in historiales %}
-                        <div class="border-bottom mb-3 pb-3">
-                            <h3>Área {{ historial.area.nombre }}</h3>
-                            <h4>Motivo de Consulta: {{ historial.motivo }}</h4>
-                            <p><strong>Fecha de carga:</strong> {{ historial.fecha }}</p>
-                            <p><strong>Antecedentes Familiares:</strong> {{ historial.antecedentefamiliar }}</p>
-                            <p><strong>Enfermedad Actual:</strong> {{ historial.enfermedad }}</p>
-                            <p><strong>Indicación:</strong> {{ historial.indicacion }}</p>
-                            <p><strong>Problema:</strong> {{ historial.problema }}</p>
-                            <p><strong>Detalle:</strong> {{ historial.detalle }}</p>
-                            <p><strong>Médico Responsable:</strong> {{ historial.usuario }}</p>
-                        </div>
+                        {% if not historial.eliminado %}
+                            <div class="border-bottom mb-3 pb-3">
+                                <input type="checkbox" name="historial_ids" value="{{ historial.id }}" class="historial-checkbox"> Seleccionar para descargar
+                                <h3>Área {{ historial.area.nombre }}</h3>
+                                <h4>Motivo de Consulta: {{ historial.motivo }}</h4>
+                                <p><strong>Fecha de carga:</strong> {{ historial.fecha }}</p>
+                                <p><strong>Antecedentes Familiares:</strong> {{ historial.antecedentefamiliar }}</p>
+                                <p><strong>Enfermedad Actual:</strong> {{ historial.enfermedad }}</p>
+                                <p><strong>Indicación:</strong> {{ historial.indicacion }}</p>
+                                <p><strong>Problema:</strong> {{ historial.problema }}</p>
+                                <p><strong>Detalle:</strong> {{ historial.detalle }}</p>
+                                <p><strong>Médico Responsable:</strong> {{ historial.usuario }}</p>
+                                <!-- Botón de eliminar -->
+                                {% if request.user.is_authenticated and is_super_admin %}
+                                    <button class="btn btn-danger" onclick="openModal({{ historial.id }})">Eliminar</button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     {% endfor %}
+                    <button type="submit" class="btn btn-primary" id="generatePdfButton" disabled>Descargar PDF</button>
+                </form>
                 {% else %}
                     <p>{{ historiales_msg }}</p>
                 {% endif %}
             </div>
         </div>
+        
+        <!-- Botón para volver atrás -->
+        <button onclick="history.back()" class="btn btn-primary fixed-bottom-right">Volver Atrás</button>
+        
+        <!-- Modal de confirmación -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Estás seguro de eliminar esta historia?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <button onclick="history.back()" class="btn btn-primary fixed-bottom-right">Volver Atrás</button>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+        
+        <script>
+            // Función para habilitar o deshabilitar el botón según la selección de checkboxes
+            document.querySelectorAll('.historial-checkbox').forEach((checkbox) => {
+                checkbox.addEventListener('change', function() {
+                    const generatePdfButton = document.getElementById('generatePdfButton');
+                    generatePdfButton.disabled = !document.querySelector('.historial-checkbox:checked');
+                });
+            });
+        </script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+            let historialIdToDelete = null;
+        
+            function openModal(historialId) {
+                historialIdToDelete = historialId;  // Guardar el ID del historial a eliminar
+                $('#deleteModal').modal('show');  // Mostrar la modal
+            }
+        
+            $('#confirmDeleteButton').click(function() {
+                if (historialIdToDelete) {
+                    window.location.href = "{% url 'eliminar_historial' 0 %}".replace('0', historialIdToDelete);
+                }
+            });
+        </script>
+        
+        </body>
+        </html>
+        

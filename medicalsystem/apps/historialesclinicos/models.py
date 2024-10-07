@@ -16,6 +16,7 @@ class HistorialClinico(models.Model):
     fecha = models.DateField(verbose_name='Fecha de carga', auto_now_add=True) # Fecha en la que se carga el historial | se autoasigna como un getdate()
     socio = models.ForeignKey(Paciente, on_delete=models.CASCADE) # Socio/Paciente al cual corresponde el historial.
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Medico Responsable') # Usuario que cargo el historial, debe ser un medico o superadmin ya que solo ellos tienen permiso para cargar nuevos historiales.
+    eliminado = models.BooleanField(default=0, verbose_name='Eliminado')
 
 # ------- Función para traer x campos del modelo historiales clinicos -------
 

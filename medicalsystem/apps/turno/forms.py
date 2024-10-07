@@ -15,7 +15,7 @@ class TurnoForm(forms.ModelForm):
         fields = ['fecha', 'horario', 'observacion', 'socio', 'usuario', 'estado', 'area']  # Agregamos 'estado' al conjunto de campos
         widgets = {
             'area': forms.Select(attrs={'class': 'form-control'}),
-            'fecha': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
+            'fecha': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control', 'min': datetime.now().date()}),  # Calendario (selector de fecha)
             'horario': forms.Select(attrs={'class': 'form-control'}),
             'observacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'socio': forms.Select(attrs={'class': 'form-control'}),
@@ -42,10 +42,34 @@ class TurnoForm(forms.ModelForm):
 
 
 class FiltroTurnosForm(forms.Form):
-    medico = forms.ModelChoiceField(queryset=User.objects.filter(groups__name='Medico'), required=False, label='Médico')
-    socio = forms.ModelChoiceField(queryset=Paciente.objects.all(), required=False, label='Socio')
-    area = forms.ModelChoiceField(queryset=Area.objects.all(), required=False, label='Area')
-    activo = forms.BooleanField(required=False, label='Activo')
+    medico = forms.ModelChoiceField(
+        queryset=User.objects.filter(groups__name='Medico'), 
+        required=False, 
+        label='Médico', 
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    socio = forms.ModelChoiceField(
+        queryset=Paciente.objects.all(), 
+        required=False, 
+        label='Socio', 
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    area = forms.ModelChoiceField(
+        queryset=Area.objects.all(), 
+        required=False, 
+        label='Area', 
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    activo = forms.BooleanField(
+        required=False, 
+        label='Activo', 
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    fecha = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label='Fecha'
+    )
 
 
         

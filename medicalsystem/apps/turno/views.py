@@ -4,6 +4,7 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import TurnoForm
 from .models import Turno
+from datetime import datetime
 from apps.base.models import Area
 from apps.socio.models import Paciente
 from django.contrib.auth.models import User, Group
@@ -101,29 +102,18 @@ class ListaTurnosView(LoginRequiredMixin, View):
     template_name = 'turno/lista_turnos.html'
     paginate_by = 5  # Número de turnos por página
 
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
     def get(self, request):
         user = request.user
         areas = Area.objects.all()
         turnos = Turno.objects.all()
 
-        # Filtrar turnos unicamente por los que tiene el medico.
-        if user.groups.filter(name='Medico').exists() and user.groups.count() == 1: # Que sea medico y unicamente medico (si tiene más de un rol no valida.)
-            turnos = turnos.filter(usuario=user)
-
-        # Filtrar turnos si el usuario es médico, mostrando solo los confirmados
-        if user.groups.filter(name='Medico').exists() and user.groups.count() == 1: # Que sea medico y unicamente medico (si tiene más de un rol no valida.)
-            turnos = turnos.filter(usuario=user, estado='4') 
-
+        # Filtrar turnos solo por los que tiene el médico (si aplica).
+        if user.groups.filter(name='Medico').exists() and user.groups.count() == 1:
+            turnos = turnos.filter(usuario=user, estado__in=['4', '0'])  # Confirmados o Pendientes
 
         # Ordenar por fecha
         orden = request.GET.get('orden', 'asc')
-        if orden == 'desc':
-            turnos = turnos.order_by('-fecha')
-        else:
-            turnos = turnos.order_by('fecha')
+        turnos = turnos.order_by('-fecha' if orden == 'desc' else 'fecha')
 
         # Filtrar por área
         area_id = request.GET.get('area', None)
@@ -145,8 +135,17 @@ class ListaTurnosView(LoginRequiredMixin, View):
         if estado:
             turnos = turnos.filter(estado=estado)
 
+        # Filtrar por fecha
+        fecha_str = request.GET.get('fecha', None)  # Cambiado de 'fecha_inicio' a 'fecha'
+        if fecha_str:
+            try:
+                fecha = datetime.strptime(fecha_str, '%Y-%m-%d')
+                turnos = turnos.filter(fecha=fecha)  # Filtra por la fecha exacta seleccionada
+            except ValueError:
+                pass  # Ignorar el filtro si la fecha no es válida
+
         # Obtener lista de médicos y socios
-        grupo_medico = Group.objects.get(name='Medico')
+        grupo_medico = get_object_or_404(Group, name='Medico')
         medicos = User.objects.filter(groups=grupo_medico)
         socios = Paciente.objects.all()  # Obtener todos los pacientes para el formulario
 
@@ -156,10 +155,8 @@ class ListaTurnosView(LoginRequiredMixin, View):
         try:
             turnos_paginados = paginator.page(page)
         except PageNotAnInteger:
-            # Si la página no es un entero, mostrar la primera página
             turnos_paginados = paginator.page(1)
         except EmptyPage:
-            # Si la página está fuera de rango (ej. 9999), mostrar la última página de resultados
             turnos_paginados = paginator.page(paginator.num_pages)
 
         context = {
@@ -171,16 +168,15 @@ class ListaTurnosView(LoginRequiredMixin, View):
             'socio_id': socio_id,
             'estado': estado,
             'turno_estados': Turno.ESTADOS,
+            'fecha': fecha_str, 
             'medicos': medicos,
             'socios': socios,
             'page_obj': turnos_paginados,
-            'is_medico': user.groups.filter(name='Medico').exists(),  # Levanta todos los usuarios con el grupo Medico.
-            'is_administrativo': user.groups.filter(name='Administrativo').exists(),  # Levanta todos los usuarios con el grupo Administrativo.
-            'is_superadmin': user.groups.filter(name='Super Administrativo').exists()  # Levanta todos los usuarios con el grupo Super Administrativo.
+            'is_medico': user.groups.filter(name='Medico').exists(),
+            'is_administrativo': user.groups.filter(name='Administrativo').exists(),
+            'is_superadmin': user.groups.filter(name='Super Administrativo').exists(),
         }
         return render(request, self.template_name, context)
-
-
 
 # --------------------------------------- LOGICA PARA FILTRAR ENTRE HORARIOS DISPONIBLES Y OCUPADOS ---------------------------------------------------------------------------
 
@@ -218,7 +214,12 @@ class ObtenerHorariosDisponiblesView(View):
 class ObtenerMedicosView(View):
     def get(self, request, *args, **kwargs):
         area_id = request.GET.get('area_id')
-        medicos = User.objects.filter(areas__id=area_id) if area_id else User.objects.none()
+        grupo_medico = Group.objects.get(name='Medico')
+                # Filtrar médicos por área y grupo
+        if area_id:
+            medicos = User.objects.filter(areas__id=area_id, groups=grupo_medico)
+        else:
+            medicos = User.objects.none()
         medicos_list = list(medicos.values_list('id', 'username'))  
         return JsonResponse({'medicos': medicos_list})
 
@@ -265,18 +266,35 @@ def export_turnos_to_excel(request):
     socio_id = request.GET.get('socio', None)
     estado = request.GET.get('estado', None)
     area_id = request.GET.get('area', None)
+    fecha_str = request.GET.get('fecha', None)  # Agregar el filtro de fecha
 
     turnos = Turno.objects.all()
 
+    # Filtrar por médico
     if medico_id:
         turnos = turnos.filter(usuario__id=medico_id)
+
+    # Filtrar por socio
     if socio_id:
         turnos = turnos.filter(socio__credencial=socio_id)
+
+    # Filtrar por estado
     if estado:
         turnos = turnos.filter(estado=estado)
+
+    # Filtrar por área
     if area_id:
         turnos = turnos.filter(area_id=area_id)
 
+    # Filtrar por fecha
+    if fecha_str:
+        try:
+            fecha = datetime.strptime(fecha_str, '%Y-%m-%d')
+            turnos = turnos.filter(fecha=fecha)  # Filtra por la fecha exacta seleccionada
+        except ValueError:
+            pass  # Ignorar el filtro si la fecha no es válida
+
+    # Ordenar los turnos
     if orden == 'desc':
         turnos = turnos.order_by('-fecha')
     else:
@@ -307,7 +325,6 @@ def export_turnos_to_excel(request):
     response['Content-Disposition'] = 'attachment; filename=turnos.xlsx'
     wb.save(response)
     return response
-
 
 
 

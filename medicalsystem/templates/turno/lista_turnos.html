@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{% static 'css/turno/lista.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
     <style>
         
         body {
@@ -290,11 +292,10 @@
         <form method="get" class="filters">
             <div class="row">
                 <div class="col-md-3">
-                    <label for="orden" class="form-label">Ordenar por fecha</label>
-                    <select id="orden" name="orden" class="form-select">
-                        <option value="asc" {% if orden == 'asc' %}selected{% endif %}>Ascendente</option>
-                        <option value="desc" {% if orden == 'desc' %}selected{% endif %}>Descendente</option>
-                    </select>
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" id="fecha" name="fecha" class="form-control" 
+                           value="{{ request.GET.fecha|default:'' }}" 
+                           placeholder="Selecciona una fecha" autocomplete="off">
                 </div>
                 <div class="col-md-3">
                     <label for="area" class="form-label">Área médica</label>
@@ -361,7 +362,7 @@
                         {% for turno in turnos %}
                             <tr>
                                 <td>{{ turno.area }}</td>
-                                <td>{{ turno.fecha }}</td>
+                                <td>{{ turno.fecha|date:"d/m/Y" }}</td>
                                 <td>{{ turno.get_horario_display }}</td>
                                 <td><a href="{% url 'detalle_paciente' turno.socio.credencial %}">{{ turno.socio }}</a></td>
                                 <td>{{ turno.responsable_de_carga.first_name }} {{ turno.responsable_de_carga.last_name }}</td>
@@ -395,10 +396,10 @@
     <ul class="pagination justify-content-center mt-4">
         {% if turnos.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page=1">&laquo; Primera</a>
+                <a class="page-link" href="?orden={{ orden }}{% if area_id %}&area={{ area_id }}{% endif %}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ request.GET.fecha }}{% endif %}&page=1">&laquo; Primera</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ turnos.previous_page_number }}">Anterior</a>
+                <a class="page-link" href="?orden={{ orden }}{% if area_id %}&area={{ area_id }}{% endif %}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ request.GET.fecha }}{% endif %}&page={{ turnos.previous_page_number }}">Anterior</a>
             </li>
         {% endif %}
 
@@ -409,31 +410,41 @@
                 </li>
             {% elif num < turnos.number|add:2 and num > turnos.number|add:"-2" %}
                 <li class="page-item">
-                    <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ num }}">{{ num }}</a>
+                    <a class="page-link" href="?orden={{ orden }}{% if area_id %}&area={{ area_id }}{% endif %}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ request.GET.fecha }}{% endif %}&page={{ num }}">{{ num }}</a>
                 </li>
             {% endif %}
         {% endfor %}
 
         {% if turnos.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ turnos.next_page_number }}">Siguiente</a>
+                <a class="page-link" href="?orden={{ orden }}{% if area_id %}&area={{ area_id }}{% endif %}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ request.GET.fecha }}{% endif %}&page={{ turnos.next_page_number }}">Siguiente</a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if activo %}&activo={{ activo }}{% endif %}&page={{ turnos.paginator.num_pages }}">Última &raquo;</a>
+                <a class="page-link" href="?orden={{ orden }}{% if area_id %}&area={{ area_id }}{% endif %}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if fecha %}&fecha={{ request.GET.fecha }}{% endif %}&page={{ turnos.paginator.num_pages }}">Última &raquo;</a>
             </li>
         {% endif %}
     </ul>
 </nav>
+
+
 <div class="container mt-3 text-center">
     <a href="/admin/" class="btn btn-primary">Volver a la página principal</a>
     {% if not is_medico %}
-    <a href="{% url 'export_turnos_to_excel' %}?orden={{ orden }}{% if medico_id %}&medico={{ medico_id }}{% endif %}{% if socio_id %}&socio={{ socio_id }}{% endif %}{% if estado %}&estado={{ estado }}{% endif %}{% if request.GET.area %}&area={{ request.GET.area }}{% endif %}" class="btn btn-success">Descargar en Excel</a>
-    {% endif %}
+    <a href="{% url 'export_turnos_to_excel' %}?orden={{ orden }}
+    {% if medico_id %}&medico={{ medico_id }}{% endif %}
+    {% if socio_id %}&socio={{ socio_id }}{% endif %}
+    {% if estado %}&estado={{ estado }}{% endif %}
+    {% if request.GET.area %}&area={{ request.GET.area }}{% endif %}
+    {% if fecha %}&fecha={{ request.GET.fecha }}{% endif %}"
+    class="btn btn-success">Descargar en Excel</a>    {% endif %}
 </div>
 
 
 
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <script>
@@ -489,6 +500,16 @@
         $('#socio').val(socioValue).trigger('change');
     });
 </script>
+<script>
+    $(document).ready(function() {
+        $('#fecha').datepicker({
+            format: 'yyyy-mm-dd', // Formato de fecha
+            autoclose: true, // Cerrar el calendario después de seleccionar
+            todayHighlight: true // Resaltar la fecha de hoy
+        });
+    });
+</script>
+
 
     
 </body>
