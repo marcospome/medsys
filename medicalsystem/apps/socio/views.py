@@ -27,7 +27,7 @@ class PacienteDetailView(LoginRequiredMixin, DetailView):
 
         # Filtrar los historiales clínicos del paciente según las áreas a las que pertenece el usuario
         user_areas = self.request.user.areas.all()
-        historiales_filtrados = HistorialClinico.objects.filter(area__in=user_areas, socio=paciente)
+        historiales_filtrados = HistorialClinico.objects.filter(area__in=user_areas, socio=paciente, eliminado=False)
 
         # Verificar si hay historiales clínicos disponibles o acceso
         if not historiales_filtrados.exists():
